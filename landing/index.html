@@ -150,26 +150,31 @@ body{
 }
 .scrawl h1 .hot{color:var(--loose)}
 /* the phone-only halo copy: stacked exactly behind the real headline.
-   Hidden on desktop, which keeps its drop-shadow halo.
-   .scrawl is an absolutely-positioned flex overlay on the sheet — it must
-   STAY that way, so the copies are stacked by taking the halo out of flow
-   and pinning it to the real h1's box, not by changing .scrawl's display. */
+   Hidden on desktop, which keeps its drop-shadow halo. */
 .scrawl .halo{display:none}
 @media(max-width:700px){
-  .scrawl{position:absolute}
-  .scrawl .halo{
-    display:block;
-    position:absolute;
-    /* The halo has to lay out in the SAME box as the real h1 or the two copies
-       wrap at different points (measured: 346px vs 311px) and the paper backing
-       misses the ink. .scrawl is a padded flex container, so instead of
-       recomputing the width here, pin the halo to the container's content box
-       and let it inherit the identical wrap. */
-    inset:0;
-    margin:auto;
-    height:max-content;
+  /* Both copies have to resolve to the SAME width, or they wrap at different
+     points and the paper backing slips out from under the ink (measured on a
+     390px viewport: halo 365px at x=13, real h1 307px at x=42 — a 29px drift
+     that let grid pills read straight through the letters).
+
+     Absolute positioning cannot fix that: an out-of-flow box sizes against the
+     padding box, while the real h1 is a flex item shrink-wrapped to its text,
+     so the two are computed from different bases no matter how they are pinned.
+     Stacking them as grid items in one 1x1 cell makes the widths identical by
+     construction — the cell resolves once and both copies fill it — with
+     nothing to keep in sync. */
+  .scrawl{
+    display:grid;
+    grid-template-areas:"stack";
+    place-items:center;
+  }
+  .scrawl h1{
+    grid-area:stack;
+    width:100%;
     pointer-events:none;
   }
+  .scrawl .halo{display:block}
 }
 .scrawl h1 .n{
   font-variant-numeric:tabular-nums;
