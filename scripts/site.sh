@@ -26,6 +26,12 @@ cp -R preview/dist site/app
 # deploy that nothing ever requests.
 rm -f site/app/data/campus.bin
 
+# The custom domain. Pages reads this from the uploaded artifact, so it has to
+# be inside site/ -- a CNAME at the repo root never reaches the published site.
+# Written by the build because site/ is wiped on every run; placing it by hand
+# would work once and then disappear on the next deploy.
+echo "sonderate.me" > site/CNAME
+
 echo "==> done"
 du -sh site site/app
 find site -name '*.json' -size +1M -exec ls -lh {} \; | awk '{print "  large:", $9, $5}'
