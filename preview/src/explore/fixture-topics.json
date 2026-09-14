@@ -1,0 +1,103 @@
+{
+  "space": {
+    "label": "Space & astronomy",
+    "synonyms": [
+      "space",
+      "astronomy",
+      "stars"
+    ],
+    "courses": [
+      "AST101H1"
+    ]
+  },
+  "psychology": {
+    "label": "Mind & behaviour",
+    "synonyms": [
+      "psychology",
+      "brain",
+      "mind"
+    ],
+    "courses": [
+      "PSY100H1"
+    ]
+  },
+  "climate": {
+    "label": "Climate & environment",
+    "synonyms": [
+      "climate",
+      "environment",
+      "environmental science"
+    ],
+    "courses": [
+      "ENV100H1"
+    ]
+  },
+  "philosophy": {
+    "label": "Philosophy & ethics",
+    "synonyms": [
+      "philosophy",
+      "ethics"
+    ],
+    "courses": [
+      "PHL101H1"
+    ]
+  },
+  "programming": {
+    "label": "Programming",
+    "synonyms": [
+      "programming",
+      "computer science",
+      "comp sci",
+      "software"
+    ],
+    "courses": [
+      "CSC108H1",
+      "CSC311H1"
+    ]
+  },
+  "ai": {
+    "label": "AI & machine learning",
+    "synonyms": [
+      "ai",
+      "artificial intelligence",
+      "machine learning",
+      "ml",
+      "deep learning"
+    ],
+    "courses": [
+      "CSC311H1",
+      "CSC108H1"
+    ]
+  },
+  "mathematics": {
+    "label": "Mathematics",
+    "synonyms": [
+      "math",
+      "mathematics",
+      "calculus"
+    ],
+    "courses": [
+      "MAT137Y1"
+    ]
+  },
+  "anthropology": {
+    "label": "People & cultures",
+    "synonyms": [
+      "anthropology",
+      "culture"
+    ],
+    "courses": [
+      "ANT100Y1"
+    ]
+  },
+  "music": {
+    "label": "Music",
+    "synonyms": [
+      "music",
+      "sound"
+    ],
+    "courses": [
+      "MUS111H1"
+    ]
+  }
+}

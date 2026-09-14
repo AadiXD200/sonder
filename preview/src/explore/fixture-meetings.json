@@ -1,0 +1,1093 @@
+[
+  {
+    "id": "AST101H1-LEC0101-F-2-660",
+    "code": "AST101H1",
+    "title": "The Sun and Its Neighbours",
+    "subject": "Science",
+    "building": "CH",
+    "room": "",
+    "start": 660,
+    "end": 720,
+    "seats": 1500,
+    "description": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "space"
+    ],
+    "descFull": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars."
+  },
+  {
+    "id": "PSY100H1-LEC0101-F-2-660",
+    "code": "PSY100H1",
+    "title": "Introductory Psychology",
+    "subject": "Science",
+    "building": "SS",
+    "room": "2118",
+    "start": 660,
+    "end": 720,
+    "seats": 450,
+    "description": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "psychology"
+    ],
+    "descFull": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious."
+  },
+  {
+    "id": "ENV100H1-LEC0101-F-2-660",
+    "code": "ENV100H1",
+    "title": "The Environment",
+    "subject": "Society",
+    "building": "UC",
+    "room": "140",
+    "start": 660,
+    "end": 720,
+    "seats": 200,
+    "description": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "climate"
+    ],
+    "descFull": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make."
+  },
+  {
+    "id": "PHL101H1-LEC0101-F-2-660",
+    "code": "PHL101H1",
+    "title": "The Problems of Philosophy",
+    "subject": "Arts & ideas",
+    "building": "UC",
+    "room": "179",
+    "start": 660,
+    "end": 720,
+    "seats": 180,
+    "description": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "philosophy"
+    ],
+    "descFull": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously."
+  },
+  {
+    "id": "CSC108H1-LEC0101-F-2-660",
+    "code": "CSC108H1",
+    "title": "Introduction to Computer Programming",
+    "subject": "Technology",
+    "building": "BA",
+    "room": "1130",
+    "start": 660,
+    "end": 720,
+    "seats": 300,
+    "description": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "programming",
+      "ai"
+    ],
+    "descFull": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean."
+  },
+  {
+    "id": "MAT137Y1-LEC0101-F-2-650",
+    "code": "MAT137Y1",
+    "title": "Calculus with Proofs",
+    "subject": "Science",
+    "building": "MP",
+    "room": "102",
+    "start": 650,
+    "end": 720,
+    "seats": 250,
+    "description": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "mathematics"
+    ],
+    "descFull": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”"
+  },
+  {
+    "id": "ANT100Y1-LEC0101-F-2-670",
+    "code": "ANT100Y1",
+    "title": "Introduction to Anthropology",
+    "subject": "Society",
+    "building": "SS",
+    "room": "2135",
+    "start": 670,
+    "end": 730,
+    "seats": 350,
+    "description": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "anthropology"
+    ],
+    "descFull": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves."
+  },
+  {
+    "id": "MUS111H1-LEC0101-F-2-660",
+    "code": "MUS111H1",
+    "title": "Music in the University",
+    "subject": "Arts & ideas",
+    "building": "VC",
+    "room": "115",
+    "start": 660,
+    "end": 720,
+    "seats": null,
+    "description": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "music"
+    ],
+    "descFull": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both."
+  },
+  {
+    "id": "AST101H1-LEC0101-F-2-780",
+    "code": "AST101H1",
+    "title": "The Sun and Its Neighbours",
+    "subject": "Science",
+    "building": "CH",
+    "room": "",
+    "start": 780,
+    "end": 840,
+    "seats": 1500,
+    "description": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "space"
+    ],
+    "descFull": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars."
+  },
+  {
+    "id": "PSY100H1-LEC0101-F-2-840",
+    "code": "PSY100H1",
+    "title": "Introductory Psychology",
+    "subject": "Science",
+    "building": "SS",
+    "room": "2118",
+    "start": 840,
+    "end": 900,
+    "seats": 450,
+    "description": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "psychology"
+    ],
+    "descFull": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious."
+  },
+  {
+    "id": "ENV100H1-LEC0101-F-2-900",
+    "code": "ENV100H1",
+    "title": "The Environment",
+    "subject": "Society",
+    "building": "UC",
+    "room": "140",
+    "start": 900,
+    "end": 960,
+    "seats": 200,
+    "description": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "climate"
+    ],
+    "descFull": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make."
+  },
+  {
+    "id": "PHL101H1-LEC0101-F-2-780",
+    "code": "PHL101H1",
+    "title": "The Problems of Philosophy",
+    "subject": "Arts & ideas",
+    "building": "UC",
+    "room": "179",
+    "start": 780,
+    "end": 840,
+    "seats": 180,
+    "description": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "philosophy"
+    ],
+    "descFull": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously."
+  },
+  {
+    "id": "CSC108H1-LEC0101-F-2-840",
+    "code": "CSC108H1",
+    "title": "Introduction to Computer Programming",
+    "subject": "Technology",
+    "building": "BA",
+    "room": "1130",
+    "start": 840,
+    "end": 900,
+    "seats": 300,
+    "description": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "programming",
+      "ai"
+    ],
+    "descFull": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean."
+  },
+  {
+    "id": "MAT137Y1-LEC0101-F-2-900",
+    "code": "MAT137Y1",
+    "title": "Calculus with Proofs",
+    "subject": "Science",
+    "building": "MP",
+    "room": "102",
+    "start": 900,
+    "end": 960,
+    "seats": 250,
+    "description": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "mathematics"
+    ],
+    "descFull": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”"
+  },
+  {
+    "id": "ANT100Y1-LEC0101-F-2-780",
+    "code": "ANT100Y1",
+    "title": "Introduction to Anthropology",
+    "subject": "Society",
+    "building": "SS",
+    "room": "2135",
+    "start": 780,
+    "end": 840,
+    "seats": 350,
+    "description": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "anthropology"
+    ],
+    "descFull": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves."
+  },
+  {
+    "id": "MUS111H1-LEC0101-F-2-840",
+    "code": "MUS111H1",
+    "title": "Music in the University",
+    "subject": "Arts & ideas",
+    "building": "VC",
+    "room": "115",
+    "start": 840,
+    "end": 900,
+    "seats": null,
+    "description": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "F",
+    "topics": [
+      "music"
+    ],
+    "descFull": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both."
+  },
+  {
+    "id": "CSC311H1-LEC0101-F-2-840",
+    "code": "CSC311H1",
+    "title": "Introduction to Machine Learning",
+    "section": "LEC0101",
+    "building": "BA",
+    "room": "1130",
+    "day": 2,
+    "start": 840,
+    "end": 900,
+    "seats": 200,
+    "term": "F",
+    "subject": "Technology",
+    "topics": [
+      "ai",
+      "programming"
+    ],
+    "description": "An introduction to models that learn from data. Explore classification, regression, and the practical questions behind machine learning.",
+    "descFull": "An introduction to models that learn from data. Explore classification, regression, and the practical questions behind machine learning. This is sample copy for interaction review; the calendar description will replace it at integration."
+  },
+  {
+    "id": "AST101H1-LEC0101-F-1-660",
+    "code": "AST101H1",
+    "title": "The Sun and Its Neighbours",
+    "subject": "Science",
+    "building": "CH",
+    "room": "",
+    "start": 660,
+    "end": 720,
+    "seats": 1500,
+    "description": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars.",
+    "section": "LEC0101",
+    "day": 1,
+    "term": "F",
+    "topics": [
+      "space"
+    ],
+    "descFull": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars."
+  },
+  {
+    "id": "PSY100H1-LEC0101-F-1-660",
+    "code": "PSY100H1",
+    "title": "Introductory Psychology",
+    "subject": "Science",
+    "building": "SS",
+    "room": "2118",
+    "start": 660,
+    "end": 720,
+    "seats": 450,
+    "description": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious.",
+    "section": "LEC0101",
+    "day": 1,
+    "term": "F",
+    "topics": [
+      "psychology"
+    ],
+    "descFull": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious."
+  },
+  {
+    "id": "ENV100H1-LEC0101-F-1-660",
+    "code": "ENV100H1",
+    "title": "The Environment",
+    "subject": "Society",
+    "building": "UC",
+    "room": "140",
+    "start": 660,
+    "end": 720,
+    "seats": 200,
+    "description": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make.",
+    "section": "LEC0101",
+    "day": 1,
+    "term": "F",
+    "topics": [
+      "climate"
+    ],
+    "descFull": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make."
+  },
+  {
+    "id": "PHL101H1-LEC0101-F-1-660",
+    "code": "PHL101H1",
+    "title": "The Problems of Philosophy",
+    "subject": "Arts & ideas",
+    "building": "UC",
+    "room": "179",
+    "start": 660,
+    "end": 720,
+    "seats": 180,
+    "description": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously.",
+    "section": "LEC0101",
+    "day": 1,
+    "term": "F",
+    "topics": [
+      "philosophy"
+    ],
+    "descFull": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously."
+  },
+  {
+    "id": "CSC108H1-LEC0101-F-1-660",
+    "code": "CSC108H1",
+    "title": "Introduction to Computer Programming",
+    "subject": "Technology",
+    "building": "BA",
+    "room": "1130",
+    "start": 660,
+    "end": 720,
+    "seats": 300,
+    "description": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean.",
+    "section": "LEC0101",
+    "day": 1,
+    "term": "F",
+    "topics": [
+      "programming",
+      "ai"
+    ],
+    "descFull": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean."
+  },
+  {
+    "id": "MAT137Y1-LEC0101-F-1-650",
+    "code": "MAT137Y1",
+    "title": "Calculus with Proofs",
+    "subject": "Science",
+    "building": "MP",
+    "room": "102",
+    "start": 650,
+    "end": 720,
+    "seats": 250,
+    "description": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”",
+    "section": "LEC0101",
+    "day": 1,
+    "term": "F",
+    "topics": [
+      "mathematics"
+    ],
+    "descFull": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”"
+  },
+  {
+    "id": "ANT100Y1-LEC0101-F-1-670",
+    "code": "ANT100Y1",
+    "title": "Introduction to Anthropology",
+    "subject": "Society",
+    "building": "SS",
+    "room": "2135",
+    "start": 670,
+    "end": 730,
+    "seats": 350,
+    "description": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves.",
+    "section": "LEC0101",
+    "day": 1,
+    "term": "F",
+    "topics": [
+      "anthropology"
+    ],
+    "descFull": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves."
+  },
+  {
+    "id": "MUS111H1-LEC0101-F-1-660",
+    "code": "MUS111H1",
+    "title": "Music in the University",
+    "subject": "Arts & ideas",
+    "building": "VC",
+    "room": "115",
+    "start": 660,
+    "end": 720,
+    "seats": null,
+    "description": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both.",
+    "section": "LEC0101",
+    "day": 1,
+    "term": "F",
+    "topics": [
+      "music"
+    ],
+    "descFull": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both."
+  },
+  {
+    "id": "AST101H1-LEC0101-F-3-660",
+    "code": "AST101H1",
+    "title": "The Sun and Its Neighbours",
+    "subject": "Science",
+    "building": "CH",
+    "room": "",
+    "start": 660,
+    "end": 720,
+    "seats": 1500,
+    "description": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars.",
+    "section": "LEC0101",
+    "day": 3,
+    "term": "F",
+    "topics": [
+      "space"
+    ],
+    "descFull": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars."
+  },
+  {
+    "id": "PSY100H1-LEC0101-F-3-660",
+    "code": "PSY100H1",
+    "title": "Introductory Psychology",
+    "subject": "Science",
+    "building": "SS",
+    "room": "2118",
+    "start": 660,
+    "end": 720,
+    "seats": 450,
+    "description": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious.",
+    "section": "LEC0101",
+    "day": 3,
+    "term": "F",
+    "topics": [
+      "psychology"
+    ],
+    "descFull": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious."
+  },
+  {
+    "id": "ENV100H1-LEC0101-F-3-660",
+    "code": "ENV100H1",
+    "title": "The Environment",
+    "subject": "Society",
+    "building": "UC",
+    "room": "140",
+    "start": 660,
+    "end": 720,
+    "seats": 200,
+    "description": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make.",
+    "section": "LEC0101",
+    "day": 3,
+    "term": "F",
+    "topics": [
+      "climate"
+    ],
+    "descFull": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make."
+  },
+  {
+    "id": "PHL101H1-LEC0101-F-3-660",
+    "code": "PHL101H1",
+    "title": "The Problems of Philosophy",
+    "subject": "Arts & ideas",
+    "building": "UC",
+    "room": "179",
+    "start": 660,
+    "end": 720,
+    "seats": 180,
+    "description": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously.",
+    "section": "LEC0101",
+    "day": 3,
+    "term": "F",
+    "topics": [
+      "philosophy"
+    ],
+    "descFull": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously."
+  },
+  {
+    "id": "CSC108H1-LEC0101-F-3-660",
+    "code": "CSC108H1",
+    "title": "Introduction to Computer Programming",
+    "subject": "Technology",
+    "building": "BA",
+    "room": "1130",
+    "start": 660,
+    "end": 720,
+    "seats": 300,
+    "description": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean.",
+    "section": "LEC0101",
+    "day": 3,
+    "term": "F",
+    "topics": [
+      "programming",
+      "ai"
+    ],
+    "descFull": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean."
+  },
+  {
+    "id": "MAT137Y1-LEC0101-F-3-650",
+    "code": "MAT137Y1",
+    "title": "Calculus with Proofs",
+    "subject": "Science",
+    "building": "MP",
+    "room": "102",
+    "start": 650,
+    "end": 720,
+    "seats": 250,
+    "description": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”",
+    "section": "LEC0101",
+    "day": 3,
+    "term": "F",
+    "topics": [
+      "mathematics"
+    ],
+    "descFull": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”"
+  },
+  {
+    "id": "ANT100Y1-LEC0101-F-3-670",
+    "code": "ANT100Y1",
+    "title": "Introduction to Anthropology",
+    "subject": "Society",
+    "building": "SS",
+    "room": "2135",
+    "start": 670,
+    "end": 730,
+    "seats": 350,
+    "description": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves.",
+    "section": "LEC0101",
+    "day": 3,
+    "term": "F",
+    "topics": [
+      "anthropology"
+    ],
+    "descFull": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves."
+  },
+  {
+    "id": "MUS111H1-LEC0101-F-3-660",
+    "code": "MUS111H1",
+    "title": "Music in the University",
+    "subject": "Arts & ideas",
+    "building": "VC",
+    "room": "115",
+    "start": 660,
+    "end": 720,
+    "seats": null,
+    "description": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both.",
+    "section": "LEC0101",
+    "day": 3,
+    "term": "F",
+    "topics": [
+      "music"
+    ],
+    "descFull": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both."
+  },
+  {
+    "id": "AST101H1-LEC0101-F-4-660",
+    "code": "AST101H1",
+    "title": "The Sun and Its Neighbours",
+    "subject": "Science",
+    "building": "CH",
+    "room": "",
+    "start": 660,
+    "end": 720,
+    "seats": 1500,
+    "description": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars.",
+    "section": "LEC0101",
+    "day": 4,
+    "term": "F",
+    "topics": [
+      "space"
+    ],
+    "descFull": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars."
+  },
+  {
+    "id": "PSY100H1-LEC0101-F-4-660",
+    "code": "PSY100H1",
+    "title": "Introductory Psychology",
+    "subject": "Science",
+    "building": "SS",
+    "room": "2118",
+    "start": 660,
+    "end": 720,
+    "seats": 450,
+    "description": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious.",
+    "section": "LEC0101",
+    "day": 4,
+    "term": "F",
+    "topics": [
+      "psychology"
+    ],
+    "descFull": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious."
+  },
+  {
+    "id": "ENV100H1-LEC0101-F-4-660",
+    "code": "ENV100H1",
+    "title": "The Environment",
+    "subject": "Society",
+    "building": "UC",
+    "room": "140",
+    "start": 660,
+    "end": 720,
+    "seats": 200,
+    "description": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make.",
+    "section": "LEC0101",
+    "day": 4,
+    "term": "F",
+    "topics": [
+      "climate"
+    ],
+    "descFull": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make."
+  },
+  {
+    "id": "PHL101H1-LEC0101-F-4-660",
+    "code": "PHL101H1",
+    "title": "The Problems of Philosophy",
+    "subject": "Arts & ideas",
+    "building": "UC",
+    "room": "179",
+    "start": 660,
+    "end": 720,
+    "seats": 180,
+    "description": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously.",
+    "section": "LEC0101",
+    "day": 4,
+    "term": "F",
+    "topics": [
+      "philosophy"
+    ],
+    "descFull": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously."
+  },
+  {
+    "id": "CSC108H1-LEC0101-F-4-660",
+    "code": "CSC108H1",
+    "title": "Introduction to Computer Programming",
+    "subject": "Technology",
+    "building": "BA",
+    "room": "1130",
+    "start": 660,
+    "end": 720,
+    "seats": 300,
+    "description": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean.",
+    "section": "LEC0101",
+    "day": 4,
+    "term": "F",
+    "topics": [
+      "programming",
+      "ai"
+    ],
+    "descFull": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean."
+  },
+  {
+    "id": "MAT137Y1-LEC0101-F-4-650",
+    "code": "MAT137Y1",
+    "title": "Calculus with Proofs",
+    "subject": "Science",
+    "building": "MP",
+    "room": "102",
+    "start": 650,
+    "end": 720,
+    "seats": 250,
+    "description": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”",
+    "section": "LEC0101",
+    "day": 4,
+    "term": "F",
+    "topics": [
+      "mathematics"
+    ],
+    "descFull": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”"
+  },
+  {
+    "id": "ANT100Y1-LEC0101-F-4-670",
+    "code": "ANT100Y1",
+    "title": "Introduction to Anthropology",
+    "subject": "Society",
+    "building": "SS",
+    "room": "2135",
+    "start": 670,
+    "end": 730,
+    "seats": 350,
+    "description": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves.",
+    "section": "LEC0101",
+    "day": 4,
+    "term": "F",
+    "topics": [
+      "anthropology"
+    ],
+    "descFull": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves."
+  },
+  {
+    "id": "MUS111H1-LEC0101-F-4-660",
+    "code": "MUS111H1",
+    "title": "Music in the University",
+    "subject": "Arts & ideas",
+    "building": "VC",
+    "room": "115",
+    "start": 660,
+    "end": 720,
+    "seats": null,
+    "description": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both.",
+    "section": "LEC0101",
+    "day": 4,
+    "term": "F",
+    "topics": [
+      "music"
+    ],
+    "descFull": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both."
+  },
+  {
+    "id": "AST101H1-LEC0101-F-5-660",
+    "code": "AST101H1",
+    "title": "The Sun and Its Neighbours",
+    "subject": "Science",
+    "building": "CH",
+    "room": "",
+    "start": 660,
+    "end": 720,
+    "seats": 1500,
+    "description": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars.",
+    "section": "LEC0101",
+    "day": 5,
+    "term": "F",
+    "topics": [
+      "space"
+    ],
+    "descFull": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars."
+  },
+  {
+    "id": "PSY100H1-LEC0101-F-5-660",
+    "code": "PSY100H1",
+    "title": "Introductory Psychology",
+    "subject": "Science",
+    "building": "SS",
+    "room": "2118",
+    "start": 660,
+    "end": 720,
+    "seats": 450,
+    "description": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious.",
+    "section": "LEC0101",
+    "day": 5,
+    "term": "F",
+    "topics": [
+      "psychology"
+    ],
+    "descFull": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious."
+  },
+  {
+    "id": "ENV100H1-LEC0101-F-5-660",
+    "code": "ENV100H1",
+    "title": "The Environment",
+    "subject": "Society",
+    "building": "UC",
+    "room": "140",
+    "start": 660,
+    "end": 720,
+    "seats": 200,
+    "description": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make.",
+    "section": "LEC0101",
+    "day": 5,
+    "term": "F",
+    "topics": [
+      "climate"
+    ],
+    "descFull": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make."
+  },
+  {
+    "id": "PHL101H1-LEC0101-F-5-660",
+    "code": "PHL101H1",
+    "title": "The Problems of Philosophy",
+    "subject": "Arts & ideas",
+    "building": "UC",
+    "room": "179",
+    "start": 660,
+    "end": 720,
+    "seats": 180,
+    "description": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously.",
+    "section": "LEC0101",
+    "day": 5,
+    "term": "F",
+    "topics": [
+      "philosophy"
+    ],
+    "descFull": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously."
+  },
+  {
+    "id": "CSC108H1-LEC0101-F-5-660",
+    "code": "CSC108H1",
+    "title": "Introduction to Computer Programming",
+    "subject": "Technology",
+    "building": "BA",
+    "room": "1130",
+    "start": 660,
+    "end": 720,
+    "seats": 300,
+    "description": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean.",
+    "section": "LEC0101",
+    "day": 5,
+    "term": "F",
+    "topics": [
+      "programming",
+      "ai"
+    ],
+    "descFull": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean."
+  },
+  {
+    "id": "MAT137Y1-LEC0101-F-5-650",
+    "code": "MAT137Y1",
+    "title": "Calculus with Proofs",
+    "subject": "Science",
+    "building": "MP",
+    "room": "102",
+    "start": 650,
+    "end": 720,
+    "seats": 250,
+    "description": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”",
+    "section": "LEC0101",
+    "day": 5,
+    "term": "F",
+    "topics": [
+      "mathematics"
+    ],
+    "descFull": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”"
+  },
+  {
+    "id": "ANT100Y1-LEC0101-F-5-670",
+    "code": "ANT100Y1",
+    "title": "Introduction to Anthropology",
+    "subject": "Society",
+    "building": "SS",
+    "room": "2135",
+    "start": 670,
+    "end": 730,
+    "seats": 350,
+    "description": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves.",
+    "section": "LEC0101",
+    "day": 5,
+    "term": "F",
+    "topics": [
+      "anthropology"
+    ],
+    "descFull": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves."
+  },
+  {
+    "id": "MUS111H1-LEC0101-F-5-660",
+    "code": "MUS111H1",
+    "title": "Music in the University",
+    "subject": "Arts & ideas",
+    "building": "VC",
+    "room": "115",
+    "start": 660,
+    "end": 720,
+    "seats": null,
+    "description": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both.",
+    "section": "LEC0101",
+    "day": 5,
+    "term": "F",
+    "topics": [
+      "music"
+    ],
+    "descFull": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both."
+  },
+  {
+    "id": "AST101H1-LEC0101-S-2-660",
+    "code": "AST101H1",
+    "title": "The Sun and Its Neighbours",
+    "subject": "Science",
+    "building": "CH",
+    "room": "",
+    "start": 660,
+    "end": 720,
+    "seats": 1500,
+    "description": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "S",
+    "topics": [
+      "space"
+    ],
+    "descFull": "How do stars come into being? What happens when they die? Take a seat for a different sense of scale, from our own Sun to the lives of distant stars."
+  },
+  {
+    "id": "PSY100H1-LEC0101-S-2-660",
+    "code": "PSY100H1",
+    "title": "Introductory Psychology",
+    "subject": "Science",
+    "building": "SS",
+    "room": "2118",
+    "start": 660,
+    "end": 720,
+    "seats": 450,
+    "description": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "S",
+    "topics": [
+      "psychology"
+    ],
+    "descFull": "A window into the science of being human: how we think, remember, feel, and make sense of other people. No psychology major required to be curious."
+  },
+  {
+    "id": "ENV100H1-LEC0101-S-2-660",
+    "code": "ENV100H1",
+    "title": "The Environment",
+    "subject": "Society",
+    "building": "UC",
+    "room": "140",
+    "start": 660,
+    "end": 720,
+    "seats": 200,
+    "description": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "S",
+    "topics": [
+      "climate"
+    ],
+    "descFull": "An introduction to environmental change and the people living through it. Follow the connections between climate, ecosystems, and the choices societies make."
+  },
+  {
+    "id": "PHL101H1-LEC0101-S-2-660",
+    "code": "PHL101H1",
+    "title": "The Problems of Philosophy",
+    "subject": "Arts & ideas",
+    "building": "UC",
+    "room": "179",
+    "start": 660,
+    "end": 720,
+    "seats": 180,
+    "description": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "S",
+    "topics": [
+      "philosophy"
+    ],
+    "descFull": "What can we know? What makes an action right? A room full of people taking ordinary questions unusually seriously."
+  },
+  {
+    "id": "CSC108H1-LEC0101-S-2-660",
+    "code": "CSC108H1",
+    "title": "Introduction to Computer Programming",
+    "subject": "Technology",
+    "building": "BA",
+    "room": "1130",
+    "start": 660,
+    "end": 720,
+    "seats": 300,
+    "description": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "S",
+    "topics": [
+      "programming",
+      "ai"
+    ],
+    "descFull": "Explore the logic behind programs, from a first instruction to a problem broken into smaller pieces. A glimpse into the craft of telling computers what you mean."
+  },
+  {
+    "id": "MAT137Y1-LEC0101-S-2-650",
+    "code": "MAT137Y1",
+    "title": "Calculus with Proofs",
+    "subject": "Science",
+    "building": "MP",
+    "room": "102",
+    "start": 650,
+    "end": 720,
+    "seats": 250,
+    "description": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "S",
+    "topics": [
+      "mathematics"
+    ],
+    "descFull": "A closer look at change, limits, and the reasoning beneath calculus. See what happens when “it works” becomes “but why does it work?”"
+  },
+  {
+    "id": "ANT100Y1-LEC0101-S-2-670",
+    "code": "ANT100Y1",
+    "title": "Introduction to Anthropology",
+    "subject": "Society",
+    "building": "SS",
+    "room": "2135",
+    "start": 670,
+    "end": 730,
+    "seats": 350,
+    "description": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "S",
+    "topics": [
+      "anthropology"
+    ],
+    "descFull": "A different way to look at human lives: culture, language, evolution, and the things we take for granted about ourselves."
+  },
+  {
+    "id": "MUS111H1-LEC0101-S-2-660",
+    "code": "MUS111H1",
+    "title": "Music in the University",
+    "subject": "Arts & ideas",
+    "building": "VC",
+    "room": "115",
+    "start": 660,
+    "end": 720,
+    "seats": null,
+    "description": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both.",
+    "section": "LEC0101",
+    "day": 2,
+    "term": "S",
+    "topics": [
+      "music"
+    ],
+    "descFull": "Listen closely to how music works and what it does in the world. A detour through sound, ideas, and the people making both."
+  }
+]

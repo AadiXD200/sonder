@@ -1,0 +1,76 @@
+{
+  "changes": [
+    {
+      "geometryId": "Multipatch_50H_NORTH-789",
+      "before": "Campus context",
+      "after": "Gerstein / Canadiana complex",
+      "source": "https://www.openstreetmap.org/relation/14756874"
+    },
+    {
+      "geometryId": "Multipatch_50H_NORTH-790",
+      "before": "Campus context",
+      "after": "Gerstein / Canadiana complex",
+      "source": "https://www.openstreetmap.org/relation/14756874"
+    },
+    {
+      "geometryId": "Multipatch_50H_NORTH-791",
+      "before": "Campus context",
+      "after": "Gerstein / Canadiana complex",
+      "source": "https://www.openstreetmap.org/relation/14756874"
+    },
+    {
+      "geometryId": "Multipatch_50H_NORTH-792",
+      "before": "Canadiana Gallery",
+      "after": "Gerstein / Canadiana complex",
+      "source": "https://www.openstreetmap.org/relation/14756874"
+    },
+    {
+      "geometryId": "Multipatch_50H_NORTH-793",
+      "before": "Canadiana Gallery",
+      "after": "Gerstein / Canadiana complex",
+      "source": "https://www.openstreetmap.org/relation/14756874"
+    },
+    {
+      "geometryId": "Multipatch_50H_NORTH-794",
+      "before": "Sigmund Samuel Library Building",
+      "after": "Gerstein / Canadiana complex",
+      "source": "https://www.openstreetmap.org/relation/14756874"
+    },
+    {
+      "geometryId": "Multipatch_50H_NORTH-795",
+      "before": "Campus context",
+      "after": "Gerstein / Canadiana complex",
+      "source": "https://www.openstreetmap.org/relation/14756874"
+    },
+    {
+      "geometryId": "Multipatch_50H_NORTH-796",
+      "before": "Campus context",
+      "after": "Gerstein / Canadiana complex",
+      "source": "https://www.openstreetmap.org/relation/14756874"
+    },
+    {
+      "geometryId": "Multipatch_50H_NORTH-1111",
+      "before": "Soldiers' Tower",
+      "after": "Hart House",
+      "source": "https://www.openstreetmap.org/relation/1989"
+    },
+    {
+      "geometryId": "Multipatch_50H_NORTH-1167",
+      "before": "Campus context",
+      "after": "Trinity College",
+      "source": "https://www.openstreetmap.org/relation/2687"
+    },
+    {
+      "geometryId": "Multipatch_50H_NORTH-1252",
+      "before": "Graduate House (Grad Room)",
+      "after": "Graduate House",
+      "source": "https://www.openstreetmap.org/relation/73341"
+    },
+    {
+      "geometryId": "Multipatch_50H_NORTH-1280",
+      "before": "Nona Macdonald Visitors Centre",
+      "after": "Knox College",
+      "source": "https://www.openstreetmap.org/relation/2032"
+    }
+  ]
+}

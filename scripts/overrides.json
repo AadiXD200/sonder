@@ -1,0 +1,4 @@
+{
+  "MY": {"code":"MY","name":"Myhal Centre for Engineering Innovation & Entrepreneurship","short_name":"Myhal","campus":"UTSG","lat":43.6607752,"lng":-79.3965401,"polygon":null,"source":"nominatim"},
+  "RO": {"code":"RO","name":"Royal Ontario Museum","short_name":"ROM","campus":"UTSG","lat":43.6676565,"lng":-79.3946988,"polygon":null,"source":"nominatim"}
+}

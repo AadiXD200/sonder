@@ -1,0 +1,180 @@
+<div id="scene"></div>
+<div class="edge-fade" aria-hidden="true"></div>
+<header>
+  <div class="identity">
+    <svg class="site-mark" viewBox="0 0 40 40" aria-hidden="true">
+      <path
+        d="M5 28V13l15-8 15 8v15l-15 8-15-8Zm0-15 15 8 15-8M20 21v15M12 17v15M28 17v15M12 9l16 8M20 5v8l15 8"
+      />
+    </svg>
+    <div>
+      <div class="overline">UNIVERSITY OF TORONTO</div>
+      <h1>St. George<span class="title-period">.</span></h1>
+    </div>
+  </div>
+  <div class="header-center">
+    <span class="blue-dot"></span>CAMPUS MODEL<span class="header-divider"
+      >/</span
+    ><span>01</span>
+  </div>
+  <button class="source-button" id="source-button">
+    Map sources <span>↗</span>
+  </button>
+</header>
+<div class="map-meta">
+  <span id="model-count">LOADING CAMPUS</span
+  ><span>43.6623° N &nbsp; 79.3968° W</span>
+</div>
+<select id="building-picker" aria-label="Go to a building" disabled>
+  <option>Go to a building…</option>
+</select>
+<div id="labels"></div>
+<aside id="selection" hidden aria-labelledby="selection-name">
+  <div class="selection-top">
+    <span id="selection-code">BUILDING</span
+    ><button id="close-selection" aria-label="Close building details">×</button>
+  </div>
+  <h2 id="selection-name"></h2>
+  <p id="selection-note">City of Toronto · 2025 building model</p>
+  <a id="official-link" target="_blank" rel="noreferrer"
+    >View on UofT map <span>↗</span></a
+  >
+</aside>
+<nav class="view-controls" aria-label="Map view">
+  <div class="view-switch">
+    <button id="view-3d" class="active" aria-pressed="true">3D VIEW</button
+    ><button id="view-2d" aria-pressed="false">PLAN VIEW</button>
+  </div>
+  <div class="control-rule"></div>
+  <button id="zoom-in" class="square-control" aria-label="Zoom in">+</button>
+  <button id="zoom-out" class="square-control" aria-label="Zoom out">−</button>
+  <div class="control-rule"></div>
+  <button
+    id="reset-view"
+    class="square-control"
+    aria-label="Reset campus view"
+    title="Reset campus view"
+  >
+    <svg viewBox="0 0 24 24">
+      <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M8 12h8m-4-4v8" />
+    </svg>
+  </button>
+  <button
+    id="labels-toggle"
+    class="square-control labels-control active"
+    aria-pressed="true"
+    aria-label="Toggle building labels"
+    title="Building labels"
+  >
+    Aa
+  </button>
+</nav>
+<div class="compass" aria-hidden="true">
+  <span>N</span
+  ><svg id="compass-arrow" viewBox="0 0 36 36">
+    <path d="m18 4 6 25-6-5-6 5Z" />
+  </svg>
+</div>
+<div class="map-scale" aria-label="Map scale">
+  <span id="scale-text">100 m</span><i id="scale-line"></i>
+</div>
+<div class="map-instruction">
+  <span class="instruction-cross">+</span
+  ><span>Go on. Change your perspective.</span
+  ><small
+    >Drag to orbit <b>·</b> Right-drag to pan <b>·</b> Scroll to zoom</small
+  >
+</div>
+<footer>
+  <span class="study-tag">CAMPUS EXPLORER</span
+  ><span class="footer-note">Independent campus map · 2025 city geometry</span
+  ><span class="attribution"
+    ><a
+      href="https://open.toronto.ca/dataset/3d-massing/"
+      target="_blank"
+      rel="noreferrer"
+      >Toronto Open Data</a
+    ><span>+</span
+    ><a
+      href="https://www.openstreetmap.org/copyright"
+      target="_blank"
+      rel="noreferrer"
+      >© OpenStreetMap</a
+    ></span
+  >
+</footer>
+<dialog id="sources" aria-label="Map sources">
+  <div class="dialog-top">
+    <span class="overline">THE GEOMETRY BEHIND THE VIEW</span
+    ><button id="close-sources" aria-label="Close map sources">×</button>
+  </div>
+  <h2>A real campus.<br />A traceable model.</h2>
+  <div class="source-entry">
+    <span>01</span>
+    <div>
+      <h3>Building shapes & heights</h3>
+      <a
+        href="https://open.toronto.ca/dataset/3d-massing/"
+        target="_blank"
+        rel="noreferrer"
+        >City of Toronto · 3D Massing, 2025 ↗</a
+      >
+      <p>
+        Building volumes and roof surfaces extracted from the city model.
+        Detailed meshes are reduced for browser performance; building locations
+        are retained.
+      </p>
+    </div>
+  </div>
+  <div class="source-entry">
+    <span>02</span>
+    <div>
+      <h3>Streets, paths & landscape</h3>
+      <a
+        href="https://www.openstreetmap.org/#map=16/43.6635/-79.3965"
+        target="_blank"
+        rel="noreferrer"
+        >OpenStreetMap · September 2026 ↗</a
+      >
+      <p>
+        Mapped paths, planted areas, and tree locations. Tree canopy sizes and
+        path widths are illustrative.
+      </p>
+    </div>
+  </div>
+  <div class="source-entry">
+    <span>03</span>
+    <div>
+      <h3>Campus reference</h3>
+      <a
+        href="https://map.utoronto.ca/?id=1809"
+        target="_blank"
+        rel="noreferrer"
+        >University of Toronto · official campus map ↗</a
+      >
+      <p>
+        Reference for building names and campus layout. This independent map is
+        not an official university map.
+      </p>
+    </div>
+  </div>
+  <p class="source-footnote">
+    Central St. George and immediate surroundings. Source vintages differ;
+    recent changes may be missing. The city model is for illustration, not
+    survey or indoor navigation.
+  </p>
+</dialog>
+<div id="loading" role="status">
+  <svg viewBox="0 0 40 40">
+    <path d="M5 28V13l15-8 15 8v15l-15 8-15-8Zm0-15 15 8 15-8M20 21v15" /></svg
+  ><span>ASSEMBLING ST. GEORGE</span
+  ><small>From city geometry to your screen.</small>
+</div>
+<div id="fallback" hidden>
+  <h2>The 3D view couldn’t load.</h2>
+  <p id="fallback-message">
+    Check your connection and WebGL support, then try again.
+  </p>
+  <button id="retry-map">Retry map</button
+  ><a href="https://map.utoronto.ca/?id=1809">Open the official map ↗</a>
+</div>
