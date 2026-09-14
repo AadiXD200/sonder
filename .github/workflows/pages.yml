@@ -2,15 +2,19 @@
 #
 # The build is NOT run here. scripts/site.sh needs ~100 MB of registrar scrape
 # intermediates in .cache/, which are not in the repo and would mean hammering
-# the timetable API on every push. So site/ is built locally with
-# ./scripts/site.sh and pushed to the site-build branch, and this workflow only
-# uploads it. Deploys are therefore a file copy, and the data refresh stays a
-# deliberate monthly act rather than a side effect of editing CSS.
+# the timetable API on every push. So the split is deliberate:
+#
+#   main      source only, no build output
+#   gh-pages  the built site/, produced locally by ./scripts/deploy.sh
+#
+# This workflow only uploads what is already there. Deploys are a file copy,
+# and the data refresh stays a deliberate monthly act rather than a side
+# effect of editing CSS.
 name: Deploy site
 
 on:
   push:
-    branches: [site-build]
+    branches: [gh-pages]
   workflow_dispatch:
 
 permissions:
@@ -31,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: site-build
+          ref: gh-pages
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
