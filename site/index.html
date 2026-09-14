@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sonder</title>
+<meta name="description" content="Right now, hundreds of lectures are happening at UofT without you. Sonder shows you which ones you could walk into.">
+<meta name="theme-color" content="#FBFAF7">
+<meta property="og:title" content="Sonder — go sit in on someone else's class">
+<meta property="og:description" content="288 lectures are running on St. George right now. You're paying for all of them. Walk into one.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ─────────── HERO ─────────── -->
+<header class="hero">
+  <div class="grain" aria-hidden="true"></div>
+
+  <nav class="topbar">
+    <span class="wordmark">Sonder<span class="dot">.</span></span>
+    <span class="topbar-meta mono">ST.&nbsp;GEORGE &nbsp;/&nbsp; <span id="today">—</span></span>
+  </nav>
+
+  <div class="hero-inner">
+
+    <!-- the live instrument -->
+    <div class="board" role="group" aria-labelledby="board-label">
+      <div class="board-top mono">
+        <span class="live"><i aria-hidden="true"></i>LIVE</span>
+        <span id="board-clock">--:--</span>
+      </div>
+
+      <p class="count-line">
+        <span class="count" id="count" aria-live="polite">288</span>
+        <span class="count-unit">lectures<br>happening<br>right now</span>
+      </p>
+
+      <p class="board-sub" id="board-label">
+        spread across <strong id="nbuild">54</strong> buildings, most of them
+        a ten&#8209;minute walk away, and you were not invited to a single one.
+      </p>
+
+      <!-- departure board -->
+      <ul class="ticker mono" id="ticker" aria-label="A sample of lectures running now"></ul>
+    </div>
+
+    <h1 class="headline">
+      You are paying<br>
+      for <em>all of it.</em>
+    </h1>
+
+    <p class="deck">
+      Somewhere on campus right now a person who has spent thirty years on one
+      subject is explaining it to a room, and there are empty seats in that room,
+      and nobody at the door is checking anything.
+    </p>
+
+    <div class="cta-row">
+      <a class="cta" href="app/explore.html">Show me what's on<span class="arrow" aria-hidden="true">&#8594;</span></a>
+      <span class="cta-note mono">free · no login · made by a student</span>
+    </div>
+  </div>
+
+  <div class="scroll-hint mono" aria-hidden="true">
+    <span>keep going</span>
+    <span class="scroll-rule"></span>
+  </div>
+</header>
+
+<!-- ─────────── THE PITCH ─────────── -->
+<main>
+<section class="pitch">
+
+  <article class="bit">
+    <span class="bit-tag mono">01 / the gap</span>
+    <h2>Two hours between classes is not a break. It's an unspent ticket.</h2>
+    <p>
+      You were going to sit in the library and look at your phone. Instead: walk
+      eight minutes, open a door, and sit at the back of a third-year lecture on
+      something you will never otherwise learn. Nobody takes attendance in a room
+      of two hundred.
+    </p>
+  </article>
+
+  <article class="bit">
+    <span class="bit-tag mono">02 / the trick</span>
+    <h2>Work in a stranger's lecture and make the professor your background music.</h2>
+    <p>
+      Bring the laptop. Do your actual readings. But instead of the hum of a café
+      you get a live human being narrating <em>Technology in the Modern World</em>
+      at you for an hour. When your brain gives out on your own work, you look up
+      and learn something for free. Worst-case you got a quiet desk.
+    </p>
+  </article>
+
+  <article class="bit">
+    <span class="bit-tag mono">03 / the point</span>
+    <h2>Knowledgemaxxing is real and your tuition is already spent.</h2>
+    <p>
+      You bought access to the entire institution and you have been using
+      roughly five courses of it. Every lecture you walk into is one you already
+      paid for. The optimal number of random lectures attended before graduation
+      is not zero. It is, conservatively, quite a lot.
+    </p>
+  </article>
+
+</section>
+
+<!-- ─────────── THE NAME ─────────── -->
+<section class="sonder-def">
+  <p class="def-word">son·der</p>
+  <p class="def-body">
+    <span class="def-pos">n.</span> the realization that each passer&#8209;by has a life
+    as vivid and complex as your own — <span class="def-gloss">every one of them
+    on their way to a room you've never been in.</span>
+  </p>
+  <p class="def-tail">
+    That's the whole idea. Not scheduling. The vertigo.
+  </p>
+</section>
+
+<!-- ─────────── CLOSE ─────────── -->
+<section class="close">
+  <p class="close-stat mono">
+    <span id="closeC">3,220</span> courses &nbsp;·&nbsp; <span id="closeB">65</span> buildings
+    &nbsp;·&nbsp; <span id="closeM">11,929</span> meetings &nbsp;·&nbsp; 0 logins
+  </p>
+  <h2 class="close-head">Go sit somewhere you don't belong.</h2>
+  <a class="cta cta-big" href="app/explore.html">Open the map<span class="arrow" aria-hidden="true">&#8594;</span></a>
+</section>
+</main>
+
+<footer class="foot mono">
+  <span>Sonder · an independent student project · not affiliated with the University of Toronto</span>
+  <span>Timetable data from UofT TTB · Geometry from Toronto Open Data</span>
+</footer>
+
+<script src="_data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# This branch carries only the built site/ directory and the deploy workflow.
+# Everything else lives on main.
+*
+!.gitignore
+!.github/
+!.github/**
+!site/
+!site/**
