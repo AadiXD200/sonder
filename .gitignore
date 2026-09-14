@@ -60,3 +60,8 @@ hero*.png
 Thumbs.db
 *.swp
 .idea/
+
+# Landing-page design explorations. Kept on disk as reference, not shipped
+# (scripts/site.sh strips alts/ from the build anyway) and not committed --
+# the chosen page is landing/index.html.
+landing/alts/
