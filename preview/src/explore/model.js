@@ -1,4 +1,5 @@
 // Pure frontend rules. No requests, browser storage, or recommendation API.
+export const SONDERATE_WINDOW_MINUTES = 60;
 export const CAMPUS_CENTRE = Object.freeze({ lat: 43.6623, lng: -79.3968 });
 export const SUBJECTS = [
   "Everything",
@@ -225,4 +226,17 @@ export function decodeState(hash, buildings = {}, meetings = []) {
   if (meetings.some((m) => m.id === p.get("class")))
     state.selected = p.get("class");
   return state;
+}
+
+export function sonderateCandidates(meetings, state, buildings, searchIndex) {
+  return findMeetings(meetings, state, buildings, searchIndex, {
+    dayView: false,
+  }).filter((meeting) => {
+    const walk = walkMinutes(state.pin, buildings[meeting.building]);
+    return (
+      walk !== null &&
+      meeting.start >= state.gapStart + walk &&
+      meeting.start <= state.gapStart + SONDERATE_WINDOW_MINUTES
+    );
+  });
 }

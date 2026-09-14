@@ -9,6 +9,7 @@ import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import shell from "./map-shell.html?raw";
 import geometryManifest from "./campus-geometry.json";
 import { toMapPoint, fromMapPoint } from "./campus-coordinates.js";
+import { catalogueDestinations } from "./campus-destinations.js";
 
 const mountedMaps = new WeakMap();
 
@@ -21,6 +22,16 @@ export function mountCampusMap(root, options = {}) {
   const $ = (id) => root.querySelector("#" + id);
   let locationPin = options.location ? { ...options.location } : null,
     pinButton = null;
+  let catalogue = options.catalogue || {},
+    destinations = [],
+    extraTargets = [],
+    selectedDestination = null,
+    destinationOutline = null;
+  const destinationMarker = document.createElement("div");
+  destinationMarker.className = "campus-destination-marker";
+  destinationMarker.hidden = true;
+  destinationMarker.setAttribute("role", "status");
+  root.append(destinationMarker);
   const mobile = () => root.clientWidth <= 650;
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
   const landmarks = [
@@ -188,6 +199,7 @@ export function mountCampusMap(root, options = {}) {
     renderCount++;
     positionLabels();
     positionLocation();
+    positionDestination();
     const north = new THREE.Vector3(0, 0, -100).applyQuaternion(
       camera.quaternion.clone().invert(),
     );
@@ -246,6 +258,7 @@ export function mountCampusMap(root, options = {}) {
     if (status !== "ready") return;
     const changed = !!selected;
     selected = null;
+    showDestination(null);
     hovered = null;
     $("selection").hidden = true;
     root.classList.remove("has-selection");
@@ -270,6 +283,12 @@ export function mountCampusMap(root, options = {}) {
   function select(b, requestedCode) {
     if (!b || status !== "ready") return;
     selected = b;
+    const destination = destinations.find((d) =>
+      requestedCode
+        ? d.codes.includes(requestedCode)
+        : b.codes?.some((code) => d.codes.includes(code)),
+    );
+    showDestination(destination);
     root.classList.add("has-selection");
     $("selection").hidden = false;
     $("selection-name").textContent =
@@ -287,7 +306,8 @@ export function mountCampusMap(root, options = {}) {
     $("official-link").hidden = !url;
     if (url) $("official-link").href = url;
     paintBuildings();
-    const target = new THREE.Vector3(b.center[0], 0, b.center[2]);
+    const center = destination?.center || b.center;
+    const target = new THREE.Vector3(center[0], 0, center[2]);
     // Leave space for the mobile detail sheet without placing the building behind it.
     if (mobile()) target.z += 100;
     flyTo(
@@ -326,6 +346,13 @@ export function mountCampusMap(root, options = {}) {
         a.b.landmark.priority - b.b.landmark.priority,
     );
     for (const { button, b } of sorted) {
+      if (
+        selectedDestination &&
+        b.codes?.includes(selectedDestination.codes[0])
+      ) {
+        button.hidden = true;
+        continue;
+      }
       const point = new THREE.Vector3(
         b.center[0],
         b.bounds[1][1] + 26,
@@ -534,9 +561,14 @@ export function mountCampusMap(root, options = {}) {
     [...surfaceParts, ...edgeParts].forEach((g) => g.dispose());
     for (const building of buildings)
       if (building.landmark) createLabel(building);
+    updatePicker();
+    $("model-count").textContent = "ST. GEORGE · 2025 BUILDING MODEL";
+    paintBuildings();
+  }
+  function updatePicker() {
     const picker = $("building-picker");
     picker.replaceChildren(new Option("Go to a building…", ""));
-    for (const building of [...buildings]
+    for (const building of [...buildings, ...extraTargets]
       .filter((b) => b.name !== "Campus context")
       .sort((a, b) => a.name.localeCompare(b.name))) {
       picker.add(
@@ -546,8 +578,71 @@ export function mountCampusMap(root, options = {}) {
         ),
       );
     }
-    $("model-count").textContent = "ST. GEORGE · 2025 BUILDING MODEL";
-    paintBuildings();
+    picker.value = selected?.buildingId || "";
+  }
+  function setCatalogue(value) {
+    catalogue = value || {};
+    if (!scene || !surfaceMesh) return;
+    const previousCode = selectedDestination?.codes[0] || selected?.codes?.[0];
+    for (let i = labels.length - 1; i >= 0; i--) {
+      if (labels[i].b.catalogueTarget) {
+        labels[i].button.remove();
+        labels.splice(i, 1);
+      }
+    }
+    destinations = catalogueDestinations(catalogue);
+    extraTargets = destinations.filter(
+      (d) => !buildings.some((b) => b.codes?.includes(d.codes[0])),
+    );
+    for (const target of extraTargets) createLabel(target);
+    if (selected?.catalogueTarget)
+      selected =
+        extraTargets.find((d) => d.codes.includes(previousCode)) || null;
+    updatePicker();
+    showDestination(
+      destinations.find((d) => d.codes.includes(previousCode)) || null,
+    );
+    invalidate();
+  }
+  function showDestination(destination) {
+    selectedDestination = destination || null;
+    if (destinationOutline) {
+      scene?.remove(destinationOutline);
+      destinationOutline.geometry.dispose();
+      destinationOutline.material.dispose();
+      destinationOutline = null;
+    }
+    destinationMarker.hidden = !destination;
+    if (!destination) return;
+    destinationMarker.textContent = `${destination.codes[0]} · ${destination.name}`;
+    if (scene && destination.footprint.length >= 3) {
+      const points = destination.footprint.map(
+        (p) => new THREE.Vector3(p.x, 1.5, p.z),
+      );
+      destinationOutline = new THREE.LineLoop(
+        new THREE.BufferGeometry().setFromPoints(points),
+        new THREE.LineBasicMaterial({ color: "#0758cc", depthTest: false }),
+      );
+      destinationOutline.renderOrder = 10;
+      scene.add(destinationOutline);
+    }
+    positionDestination();
+  }
+  function positionDestination() {
+    if (!camera || !selectedDestination) return;
+    const p = new THREE.Vector3(...selectedDestination.center).project(camera);
+    const rect = $("scene").getBoundingClientRect();
+    const x = (p.x * 0.5 + 0.5) * rect.width,
+      y = (-p.y * 0.5 + 0.5) * rect.height;
+    destinationMarker.style.left = `${x}px`;
+    destinationMarker.style.top = `${y}px`;
+    destinationMarker.hidden =
+      p.z < -1 ||
+      p.z > 1 ||
+      x < 0 ||
+      x > rect.width ||
+      y < 0 ||
+      y > rect.height;
   }
   function ground(data) {
     const floor = new THREE.Mesh(
@@ -917,6 +1012,7 @@ export function mountCampusMap(root, options = {}) {
     });
     ground(data);
     buildModel(meta, binary);
+    setCatalogue(catalogue);
     resize();
     setupLocation();
     const canvas = renderer.domElement;
@@ -1066,7 +1162,11 @@ export function mountCampusMap(root, options = {}) {
   };
   $("building-picker").onchange = (e) => {
     if (e.target.value)
-      select(buildings.find((b) => b.buildingId === e.target.value));
+      select(
+        [...buildings, ...extraTargets].find(
+          (b) => b.buildingId === e.target.value,
+        ),
+      );
     else clearSelection();
   };
   function dismissSelection() {
@@ -1102,6 +1202,9 @@ export function mountCampusMap(root, options = {}) {
           if (value?.isTexture) textures.add(value);
       }
     };
+    showDestination(null);
+    destinations = [];
+    extraTargets = [];
     scene?.traverse(collect);
     pickMeshes.forEach(collect);
     geometries.forEach((g) => g.dispose());
@@ -1222,11 +1325,11 @@ export function mountCampusMap(root, options = {}) {
       };
     },
     getBuildings() {
-      return buildings.map(publicBuilding);
+      return [...buildings, ...extraTargets].map(publicBuilding);
     },
     selectBuilding(id) {
       if (status !== "ready") return false;
-      const b = buildings.find(
+      const b = [...buildings, ...extraTargets].find(
         (b) => b.buildingId === id || b.codes?.includes(id),
       );
       if (!b) return false;
@@ -1240,6 +1343,7 @@ export function mountCampusMap(root, options = {}) {
         throw new TypeError("View must be plan or 3d");
       setView(view === "plan");
     },
+    setCatalogue,
     setLocation(pin) {
       if (!pin || !Number.isFinite(pin.lat) || !Number.isFinite(pin.lng))
         return false;
@@ -1256,7 +1360,9 @@ export function mountCampusMap(root, options = {}) {
     },
     project(id) {
       if (status !== "ready") return null;
-      const b = buildings.find((b) => b.buildingId === id || b.name === id);
+      const b = [...buildings, ...extraTargets].find(
+        (b) => b.buildingId === id || b.name === id || b.codes?.includes(id),
+      );
       if (!b) return null;
       const p = new THREE.Vector3(...b.center).project(camera),
         rect = $("scene").getBoundingClientRect();

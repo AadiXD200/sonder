@@ -887,3 +887,31 @@
   outline-offset: 2px;
   border-radius: 50%;
 }
+
+.campus-map .campus-destination-marker {
+  position: absolute;
+  z-index: 7;
+  max-width: min(270px, 65%);
+  transform: translate(-50%, calc(-100% - 12px));
+  padding: 8px 10px;
+  border: 1px solid #0758cc;
+  background: #fff;
+  color: #164f97;
+  box-shadow: 0 2px 10px #17447920;
+  font:
+    11px/1.4 "IBM Plex Mono",
+    monospace;
+  text-align: center;
+  pointer-events: none;
+}
+.campus-map .campus-destination-marker::after {
+  content: "";
+  position: absolute;
+  left: calc(50% - 4px);
+  bottom: -16px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0758cc;
+  box-shadow: 0 0 0 3px white;
+}

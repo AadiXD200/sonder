@@ -5,6 +5,8 @@ import "@fontsource/caveat/latin-600.css";
 import { lectures, laterLectures } from "./samples.js";
 import {
   DEFAULTS,
+  SONDERATE_WINDOW_MINUTES,
+  sonderateCandidates,
   catalogueDefaults,
   CAMPUS_CENTRE,
   SUBJECTS,
@@ -124,7 +126,7 @@ $("sonder").innerHTML = `
  <p class="filter-note">Walking estimates use distance, not turn-by-turn routes. Unknown room sizes are excluded only when bigger rooms is on.</p>
  </div><footer class="sheet-actions"><button type="button" id="reset-filters" class="text-button">Reset</button><button type="submit" id="apply-filters" class="ink-button">Show 8 classes ${icon("arrow")}</button></footer></form></dialog>
 <dialog id="lecture-detail" class="sheet detail-sheet" aria-labelledby="detail-title"></dialog>
-<dialog id="about-preview" class="sheet about-sheet" aria-labelledby="about-title"><header class="sheet-heading"><div><p class="eyebrow">NOT QUITE THE REAL THING</p><h2 id="about-title">A preview of Sonder.</h2></div><button id="close-preview" class="icon-button" aria-label="Close preview information">${icon("close")}</button></header><div class="sheet-body"><p>The map uses sourced campus geometry. The SAMPLE DAY label means meetings and descriptions are fixtures; the label changes when all three published catalogue files are ready.</p><p>Sonderate picks a reachable class starting within 20 minutes of your gap’s start. Walking estimates use your pin and building coordinates. Search, ranking, and filters run locally.</p><p>Shared links include your filters and approximate pin position. No account or browser storage is used. <button id="retry-data" class="text-button">Check for published timetable ↗</button><span id="data-status" role="status"></span></p></div></dialog>
+<dialog id="about-preview" class="sheet about-sheet" aria-labelledby="about-title"><header class="sheet-heading"><div><p class="eyebrow">NOT QUITE THE REAL THING</p><h2 id="about-title">A preview of Sonder.</h2></div><button id="close-preview" class="icon-button" aria-label="Close preview information">${icon("close")}</button></header><div class="sheet-body"><p>The map uses sourced campus geometry. The SAMPLE DAY label means meetings and descriptions are fixtures; the label changes when all three published catalogue files are ready.</p><p>Sonderate picks a reachable class starting within ${SONDERATE_WINDOW_MINUTES} minutes of your gap’s start. Walking estimates use your pin and building coordinates. Search, ranking, and filters run locally.</p><p>Shared links include your filters and approximate pin position. No account or browser storage is used. <button id="retry-data" class="text-button">Check for published timetable ↗</button><span id="data-status" role="status"></span></p></div></dialog>
 <dialog id="location-dialog" class="sheet" aria-labelledby="location-title"><header class="sheet-heading"><div><p class="eyebrow">START HERE</p><h2 id="location-title">Where are you walking from?</h2></div><button id="close-location" class="icon-button" aria-label="Close location">${icon("close")}</button></header><div class="sheet-body"><p>Campus centre is the default. Choose a building, use your location, or drag the blue pin on the map.</p><label class="time-field">Start near a building<select id="location-building"><option value="">Choose a building…</option></select></label><div class="location-actions"><button id="use-location" class="ink-button">Use my location</button><button id="centre-location" class="text-button">Campus centre</button><button id="move-pin" class="text-button">Move pin on map ↗</button></div><p id="location-status" class="filter-note" role="status"></p><p class="filter-note">Shared links include this approximate position.</p></div></dialog>
 <dialog id="share-dialog" class="sheet" aria-labelledby="share-title"><header class="sheet-heading"><h2 id="share-title">Share this detour.</h2><button id="close-share" class="icon-button" aria-label="Close share link">${icon("close")}</button></header><div class="sheet-body"><label class="time-field">Copy this link<input id="share-url" type="url" readonly></label><p class="filter-note">Includes your filters and approximate pin position.</p></div></dialog>
 <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>`;
@@ -139,6 +141,7 @@ function ensureMap() {
       if (disposed) return false;
       map = mountCampusMap($("explore-map"), {
         embedded: true,
+        catalogue: buildings,
         labelTop: 60,
         labelBottom: 95,
         location: state.pin,
@@ -359,12 +362,7 @@ function openLecture(id, fromRandom = false) {
   syncURL();
 }
 function sonderate() {
-  const eligible = available(state, { dayView: false }).filter(
-    (l) =>
-      walk(l) !== null &&
-      l.start >= state.gapStart + walk(l) &&
-      l.start <= state.gapStart + 20,
-  );
+  const eligible = sonderateCandidates(all, state, buildings, searchIndex);
   const alternatives = eligible.filter((l) => l.id !== state.selected),
     pool = alternatives.length ? alternatives : eligible;
   if (pool.length)
@@ -373,7 +371,7 @@ function sonderate() {
   state.selected = null;
   syncURL();
   $("lecture-detail").innerHTML =
-    `<header class="sheet-heading"><p class="eyebrow">A SMALL PLOT TWIST</p><button id="close-detail" class="icon-button" aria-label="Close class details">${icon("close")}</button></header><div class="sheet-body"><h2 id="detail-title">Nothing you can get to in time.</h2><p>No class starts within 20 minutes of ${fullTime(state.gapStart)} and fits your filters and walk. Try another gap.</p></div><footer class="detail-actions"><button id="adjust-filters" class="ink-button">Adjust filters ${icon("arrow")}</button></footer>`;
+    `<header class="sheet-heading"><p class="eyebrow">A SMALL PLOT TWIST</p><button id="close-detail" class="icon-button" aria-label="Close class details">${icon("close")}</button></header><div class="sheet-body"><h2 id="detail-title">Nothing you can get to in time.</h2><p>No class starts within ${SONDERATE_WINDOW_MINUTES} minutes of ${fullTime(state.gapStart)} and fits your filters and walk. Try another gap.</p></div><footer class="detail-actions"><button id="adjust-filters" class="ink-button">Adjust filters ${icon("arrow")}</button></footer>`;
   if (!$("lecture-detail").open) $("lecture-detail").showModal();
 }
 function setPin(pin) {
@@ -444,6 +442,7 @@ async function refreshCatalogue() {
     const firstLoad = !liveData;
     all = catalogue.meetings;
     buildings = catalogue.buildings;
+    map?.setCatalogue(buildings);
     topicDictionary = catalogue.topics;
     terms = catalogue.terms;
     searchIndex = createSearchIndex(topicDictionary);
