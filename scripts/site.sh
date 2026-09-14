@@ -2,7 +2,7 @@
 # Assemble the deployable static site into site/.
 #
 #   site/index.html      the landing page
-#   site/app/            the built app (vite, base=/app/)
+#   site/app/            the built app (vite, base=./ so it works at any mount point)
 #
 # One directory, no server, no build step at the host. Drop it on GitHub Pages
 # or Cloudflare Pages as-is.
@@ -14,7 +14,7 @@ echo "==> data"
 .venv/bin/python scripts/landing_stats.py
 
 echo "==> app"
-( cd preview && npm run build -- --base=/app/ )
+( cd preview && npm run build -- --base=./ )
 
 echo "==> assemble"
 rm -rf site && mkdir -p site
