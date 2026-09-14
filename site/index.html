@@ -4,142 +4,841 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Sonder</title>
-<meta name="description" content="Right now, hundreds of lectures are happening at UofT without you. Sonder shows you which ones you could walk into.">
-<meta name="theme-color" content="#FBFAF7">
-<meta property="og:title" content="Sonder — go sit in on someone else's class">
-<meta property="og:description" content="288 lectures are running on St. George right now. You're paying for all of them. Walk into one.">
+<meta name="description" content="Hundreds of lectures are happening on campus right now. Sonder shows you the ones you could walk into.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@300;400;500&family=Caveat:wght@500;600;700&display=swap">
+<style>
+:root{
+  --paper:#F2F0E8;        /* photocopied timetable */
+  --ink:#14140F;
+  --dim:#6C6A5F;
+  --rule:#CFCBBC;
+  --mine:#1B4B8F;         /* your own 5 courses */
+  --loose:#FF3B1F;        /* everything that escaped */
+  --acid:#D7FF3E;
+  --mono:"DM Mono",ui-monospace,Menlo,monospace;
+  --fat:"Archivo Black",Impact,sans-serif;
+  --hand:"Caveat","Bradley Hand","Comic Sans MS",cursive;
+  --row:46px;             /* one hour */
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--mono);font-size:15px;line-height:1.5;overflow-x:hidden;
+  background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.022) 0 1px,transparent 1px 3px);
+}
+.wrap{max-width:1100px;margin:0 auto;padding:0 clamp(14px,4vw,40px)}
+
+/* ═════ MASTHEAD ═════ */
+.mast{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+  padding:14px 0;border-bottom:2px solid var(--ink);flex-wrap:wrap}
+.logo{font-family:var(--fat);font-size:clamp(1.25rem,5vw,1.6rem);text-transform:uppercase;letter-spacing:-.04em;line-height:1}
+.logo b{background:var(--loose);color:var(--paper);padding:0 .18em;display:inline-block;transform:rotate(-2.5deg)}
+.stamp{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:right;line-height:1.45}
+/* <i> here is a hook for the phone layout's middot, not emphasis */
+.stamp i{font-style:normal}
+.mast-r{display:flex;align-items:center;gap:14px}
+@media(max-width:700px){
+  /* On a phone the wordmark and the button have to share the first row —
+     wrapping .mast-r to its own line pushed the logo off the fold entirely.
+     So: logo and button on one line, the stamp dropped underneath as a
+     caption on the full width. */
+  .mast{align-items:center;padding:11px 0;gap:6px}
+  .logo{order:1}
+  .mast-r{order:2;flex-direction:row-reverse;align-items:center;gap:10px}
+  .stamp{order:3;width:100%;text-align:left;font-size:.52rem;letter-spacing:.1em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* two lines become one caption: swap the break for a middot */
+  .stamp br{display:none}
+  .stamp i::before{content:" · "}
+  .go-sm{font-size:.48rem;padding:5px 9px}
+}
+
+/* ═════ THE GRID ═════ */
+.sheet{position:relative;margin-top:clamp(16px,3.5vw,26px);overflow:hidden;padding-bottom:6px}
+
+.sheet-label{display:flex;justify-content:space-between;align-items:baseline;
+  font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+
+/* the printed timetable underneath */
+.grid{
+  position:relative;
+  display:grid;
+  grid-template-columns:38px repeat(5,1fr);
+  border:1.5px solid var(--ink);
+  background:#FBFAF4;
+}
+.hh{
+  grid-column:1;
+  height:var(--row);
+  border-top:1px solid var(--rule);
+  font-size:.56rem;color:var(--dim);
+  padding:3px 0 0 4px;
+  font-variant-numeric:tabular-nums;
+}
+.hh:first-of-type{border-top:none}
+.col{
+  border-left:1px solid var(--rule);
+  position:relative;
+  grid-row:1 / -1;
+}
+.dayhead{
+  position:absolute;top:0;left:0;right:0;
+  font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
+  text-align:center;padding:3px 0;border-bottom:1px solid var(--rule);
+  background:#FBFAF4;z-index:1;
+}
+
+/* your own courses — small, contained, obedient */
+.mine{
+  position:absolute;left:3px;right:3px;
+  background:var(--mine);color:#fff;
+  border:1px solid var(--mine);
+  font-size:.5rem;line-height:1.15;padding:3px 4px;
+  overflow:hidden;z-index:8;    /* above the loose blocks (they're YOURS), below the headline */
+  border-radius:1px;
+  box-shadow:0 0 0 2px var(--paper);
+}
+
+/* everything else — escaping the cells */
+.loose{
+  position:absolute;
+  background:var(--paper);
+  border:1.5px solid var(--ink);
+  font-size:.44rem;line-height:1.18;
+  padding:2px 4px;
+  white-space:nowrap;
+  z-index:3;
+  box-shadow:2px 2px 0 rgba(20,20,15,.22);
+  animation:esc .5s cubic-bezier(.2,.8,.3,1) both;
+  will-change:transform,opacity;
+}
+.loose .lc{font-weight:500;color:var(--loose)}
+@keyframes esc{from{opacity:0;transform:translate(0,6px) rotate(0deg) scale(.96)}}
+
+/* the headline sits ON the sheet, like it was scrawled across a printout */
+.scrawl{
+  position:absolute;z-index:31;
+  left:0;right:0;top:0;bottom:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 clamp(8px,3vw,24px);
+  text-align:center;
+  pointer-events:none;
+}
+.scrawl h1{
+  font-family:var(--hand);
+  font-weight:700;
+  font-size:clamp(3.9rem,16.8vw,11rem);
+  line-height:.8;letter-spacing:-.015em;
+  -webkit-text-stroke:8px var(--paper);
+  paint-order:stroke fill;
+  margin:0;
+  transform:rotate(-2deg);
+  color:var(--ink);
+  text-wrap:pretty;
+  /* The paper halo has to sit OUTSIDE the glyph, not under it. text-shadow
+     paints behind the letter, and with paint-order:stroke fill the stroke is
+     part of the glyph — so stacked shadows bled through the ink and made the
+     headline look translucent. drop-shadow filters the rendered glyph instead,
+     so the ink stays fully opaque and the halo grows outward from the stroke. */
+  filter:
+    drop-shadow(0 0 1px var(--paper))
+    drop-shadow(0 0 2px var(--paper))
+    drop-shadow(2px 2px 0 rgba(20,20,15,.13));
+}
+.scrawl h1 .hot{color:var(--loose)}
+/* the phone-only halo copy: stacked exactly behind the real headline.
+   Hidden on desktop, which keeps its drop-shadow halo.
+   .scrawl is an absolutely-positioned flex overlay on the sheet — it must
+   STAY that way, so the copies are stacked by taking the halo out of flow
+   and pinning it to the real h1's box, not by changing .scrawl's display. */
+.scrawl .halo{display:none}
+@media(max-width:700px){
+  .scrawl{position:absolute}
+  .scrawl .halo{
+    display:block;
+    position:absolute;
+    /* The halo has to lay out in the SAME box as the real h1 or the two copies
+       wrap at different points (measured: 346px vs 311px) and the paper backing
+       misses the ink. .scrawl is a padded flex container, so instead of
+       recomputing the width here, pin the halo to the container's content box
+       and let it inherit the identical wrap. */
+    inset:0;
+    margin:auto;
+    height:max-content;
+    pointer-events:none;
+  }
+}
+.scrawl h1 .n{
+  font-variant-numeric:tabular-nums;
+  color:var(--ink);
+  display:inline-block;
+  padding:0 .04em;
+}
+.scrawl .kick{
+  display:block;
+  font-family:var(--hand);font-weight:700;
+  font-size:clamp(1.35rem,5.2vw,2.5rem);
+  color:var(--loose);
+  transform:rotate(-1.2deg);
+  margin-top:.45em;
+  -webkit-text-stroke:6px var(--paper);
+  paint-order:stroke fill;
+  /* same reason as the h1: halo outside the glyph, ink stays solid */
+  filter:drop-shadow(0 0 1px var(--paper)) drop-shadow(0 0 2px var(--paper));
+}
+/* hand-drawn circle around the big number, like someone ringed it in pen */
+.ring{
+  position:absolute;z-index:30;pointer-events:none;
+  overflow:visible;
+}
+.ring path{
+  fill:none;stroke:var(--loose);stroke-width:4;
+  stroke-linecap:round;
+  stroke-dasharray:1000;stroke-dashoffset:1000;
+  animation:draw 1.1s .55s ease-out forwards;
+}
+@keyframes draw{to{stroke-dashoffset:0}}
+/* ═════ THE DEFINITION ═════ */
+.defn{
+  margin:clamp(40px,9vw,80px) 0 clamp(28px,6vw,52px);
+  padding:clamp(22px,5vw,38px) clamp(18px,4.5vw,40px);
+  border-top:2px solid var(--ink);
+  border-bottom:2px solid var(--ink);
+  position:relative;
+}
+.defn .hw{
+  font-family:var(--hand);font-weight:600;
+  font-size:clamp(2.6rem,10vw,4.6rem);
+  line-height:.9;margin:0;
+  transform:rotate(-1.6deg);
+  display:inline-block;
+}
+.defn .pos{
+  font-family:var(--mono);font-style:italic;
+  font-size:clamp(.8rem,2.6vw,.95rem);
+  color:var(--dim);margin:.55em 0 .9em;
+}
+.defn .gloss{
+  font-family:var(--mono);font-weight:300;
+  font-size:clamp(1rem,3.4vw,1.35rem);
+  line-height:1.55;margin:0;
+  max-width:62ch;
+}
+.defn .gloss .em{
+  background:var(--acid);
+  padding:0 .18em;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;
+}
+.defn .turn{
+  font-family:var(--hand);font-weight:700;
+  font-size:clamp(1.5rem,5.6vw,2.4rem);
+  color:var(--loose);
+  margin:.85em 0 0;
+  transform:rotate(-1deg);
+  display:inline-block;
+  line-height:1.05;
+}
+.arrownote{
+  position:absolute;z-index:32;pointer-events:none;
+  font-family:var(--hand);font-weight:600;
+  font-size:clamp(.95rem,3.1vw,1.28rem);
+  color:var(--loose);
+  transform:rotate(-7deg);
+  text-shadow:1.5px 1.5px 0 var(--paper),-1.5px 1.5px 0 var(--paper),1.5px -1.5px 0 var(--paper),-1.5px -1.5px 0 var(--paper);
+}
+
+/* ═════ THE READING ═════ */
+.read{display:grid;gap:clamp(18px,3.4vw,26px);margin:clamp(26px,5vw,44px) 0 0;
+  grid-template-columns:1fr}
+@media(min-width:760px){.read{grid-template-columns:1.15fr 1fr;align-items:start}}
+
+.claim{margin:0;font-size:clamp(1.02rem,2.9vw,1.24rem);line-height:1.42;max-width:44ch}
+.claim b{background:var(--acid);padding:1px 5px;font-weight:400}
+.claim .blue{color:var(--mine);font-weight:500}
+
+/* live key/legend, doubles as the data readout */
+.key{border:1.5px solid var(--ink);background:#FBFAF4;padding:14px 16px;font-size:.66rem;line-height:1.7}
+.key div{display:flex;align-items:center;gap:9px}
+.key i{width:13px;height:13px;flex:none;border:1.5px solid var(--ink)}
+.key .i-mine{background:var(--mine);border-color:var(--mine)}
+.key .i-loose{background:var(--paper)}
+.key .n{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:500}
+.key hr{border:0;border-top:1px dashed var(--rule);margin:9px 0}
+.key .live{color:var(--loose);display:flex;align-items:center;gap:7px;letter-spacing:.12em;text-transform:uppercase;font-size:.6rem}
+.key .live i{width:7px;height:7px;border:0;border-radius:50%;background:var(--loose);animation:blink 1.4s steps(2) infinite}
+@keyframes blink{50%{opacity:.15}}
+
+/* ═════ SLABS ═════ */
+/* ═════ THE STUBS — three tickets, loose on a desk ═════ */
+.tix{margin:clamp(34px,7vw,64px) 0 clamp(26px,5vw,44px)}
+.tix-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
+  border-bottom:1.5px solid var(--ink);padding-bottom:6px;margin-bottom:clamp(18px,4vw,28px)}
+
+.stub{
+  position:relative;
+  display:grid;grid-template-columns:34px 1fr;
+  border:1.5px solid var(--ink);
+  background:#FBFAF4;
+  box-shadow:5px 5px 0 rgba(20,20,15,.14);
+  margin-bottom:clamp(16px,3.6vw,24px);
+}
+.stub:nth-of-type(1){transform:rotate(-.9deg)}
+.stub:nth-of-type(2){transform:rotate(.7deg)}
+.stub:nth-of-type(3){transform:rotate(-.5deg)}
+
+/* the perforated tear edge */
+.tear{
+  border-right:2px dashed var(--ink);
+  background:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  padding:10px 0;
+}
+.tear span{
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font-family:var(--mono);font-size:.46rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--dim);white-space:nowrap;
+}
+/* punch holes at the tear */
+.stub::before,.stub::after{
+  content:"";position:absolute;left:34px;width:13px;height:13px;
+  background:var(--paper);border:1.5px solid var(--ink);border-radius:50%;
+  transform:translateX(-50%);
+}
+.stub::before{top:-7px}
+.stub::after{bottom:-7px}
+
+.body{padding:clamp(15px,3.8vw,24px) clamp(14px,4vw,24px)}
+.tno{
+  display:flex;align-items:baseline;gap:8px;margin-bottom:9px;
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+}
+.tno b{font-family:var(--fat);font-size:1.5rem;letter-spacing:-.03em;color:var(--loose);line-height:1}
+.tno i{font-style:normal;color:var(--dim)}
+.stub h3{
+  font-family:var(--fat);text-transform:uppercase;
+  font-size:clamp(1.02rem,4.1vw,1.36rem);line-height:1.06;letter-spacing:-.03em;
+  margin:0 0 9px;text-wrap:balance;
+}
+.stub p{margin:0;font-size:.84rem;line-height:1.53}
+.stub p .hl{background:var(--acid);padding:0 .16em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+/* the value line along the bottom, like a fare */
+.fare{
+  margin-top:12px;padding-top:9px;border-top:1px dashed var(--rule);
+  display:flex;justify-content:space-between;gap:10px;
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);
+}
+.fare b{color:var(--ink);font-weight:500}
+
+/* ═════ END ═════ */
+.end{border:2px solid var(--ink);background:var(--loose);color:var(--paper);
+  padding:clamp(24px,6vw,48px);text-align:center}
+.end h2{font-family:var(--fat);text-transform:uppercase;
+  font-size:clamp(1.7rem,7.6vw,3.2rem);line-height:.93;letter-spacing:-.04em;margin:0 0 18px;text-wrap:balance}
+.go{display:inline-block;background:var(--ink);color:var(--acid);text-decoration:none;
+  font-family:var(--fat);text-transform:uppercase;font-size:.98rem;padding:15px 30px;
+  border:2px solid var(--ink);transition:transform .12s,box-shadow .12s}
+.go:hover,.go:focus-visible{transform:translate(-3px,-3px);box-shadow:5px 5px 0 var(--ink)}
+/* the masthead twin: same button, dialled right down so it reads as a quiet
+   shortcut rather than a second headline. Must follow .go — equal specificity. */
+.go-sm{font-size:.5rem;padding:4px 9px;border-width:1px;letter-spacing:.06em;
+  white-space:nowrap;box-shadow:2px 2px 0 var(--ink)}
+.go-sm:hover,.go-sm:focus-visible{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+.fine{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
+  text-align:center;padding:22px 0 30px;line-height:1.7}
+
+:focus-visible{outline:3px solid var(--loose);outline-offset:2px}
+/* ═════ PHONE: one day only, calendar-style ═════
+   Five columns at 400px gives each day ~70px — blocks collide and truncate.
+   On a phone we show today alone, full width, the way a calendar app does. */
+@media(max-width:700px){
+  :root{--row:58px}
+  .grid{grid-template-columns:44px 1fr}
+  .col{display:none}
+  .col.today{display:block;grid-column:2}
+  .hh{font-size:.6rem;padding:3px 0 0 5px}
+  .dayhead{font-size:.58rem}
+
+  .loose{
+    font-size:.54rem;line-height:1.2;
+    padding:3px 6px;
+    box-shadow:2px 2px 0 rgba(20,20,15,.2);
+    /* widths vary per block now, so let the title clip on one line rather
+       than reflow and blow the collision heights the packer assumes */
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  /* One column is ~350px wide, so left:3px/right:3px made your own courses
+     read as full-width dividers rather than cards. Cap the width and let the
+     JS place them left or right, the way they sit in a real week view. */
+  .mine{
+    font-size:.56rem;padding:4px 7px;
+    right:auto;width:54%;
+    box-shadow:0 0 0 2px var(--paper), 2px 2px 0 rgba(20,20,15,.28);
+  }
+
+  /* The blocks are solid at this size, so the headline needs a heavier paper
+     stroke to stay legible over them — same trick as desktop, dialled up.
+     No scrim: the grid must still read as full, not punched through. */
+  /* Caveat stops at 700, so weight has to come from the stroke. Stacking
+     sub-pixel ink drop-shadows to fake it produced a smeared, gradient-looking
+     edge — that was blur, not bold. The headline is painted twice instead
+     (see the .halo copy in the markup): the copy underneath carries the wide
+     paper stroke, and this one strokes in ink, which genuinely thickens the
+     letterform with a hard edge and no blur anywhere. */
+  .scrawl h1{
+    font-size:clamp(3.9rem,16.5vw,7rem);
+    -webkit-text-stroke:3px var(--ink);
+    paint-order:stroke fill;
+    filter:none;
+  }
+  .scrawl h1 .hot{-webkit-text-stroke:3px var(--loose)}
+  .scrawl .halo{
+    -webkit-text-stroke:14px var(--paper);
+    color:var(--paper);
+  }
+  .scrawl .halo .hot{color:var(--paper);-webkit-text-stroke:14px var(--paper)}
+  /* the kicker carries its own rotate(-1.2deg) inside the h1; the halo copy
+     must reproduce it identically or the two layers land at different angles
+     and the paper backing misses the ink entirely */
+  .scrawl .halo .kick{
+    color:var(--paper);
+    -webkit-text-stroke:8px var(--paper);
+  }
+  /* the kicker stays light — at this size a heavy ink stroke closed up the
+     letterforms and made it unreadable. Only the headline gets the weight. */
+  .scrawl .kick{
+    font-size:clamp(1.45rem,5.6vw,2.5rem);
+    -webkit-text-stroke:0;
+    filter:none;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
+<div class="wrap">
 
-<!-- ─────────── HERO ─────────── -->
-<header class="hero">
-  <div class="grain" aria-hidden="true"></div>
+  <div class="mast">
+    <div class="logo">Son<b>der</b></div>
+    <div class="mast-r">
+      <div class="stamp">St. George</div>
+      <a class="go go-sm" href="app/explore.html">Show me what's on now &rarr;</a>
+    </div>
+  </div>
 
-  <nav class="topbar">
-    <span class="wordmark">Sonder<span class="dot">.</span></span>
-    <span class="topbar-meta mono">ST.&nbsp;GEORGE &nbsp;/&nbsp; <span id="today">—</span></span>
-  </nav>
+  <section class="sheet">
+    <div class="sheet-label">
+      <span id="sheetday">Monday, fall term</span>
+      <span class="live-sm" id="clk">--:--</span>
+    </div>
 
-  <div class="hero-inner">
+    <div class="grid" id="grid" aria-hidden="true"></div>
 
-    <!-- the live instrument -->
-    <div class="board" role="group" aria-labelledby="board-label">
-      <div class="board-top mono">
-        <span class="live"><i aria-hidden="true"></i>LIVE</span>
-        <span id="board-clock">--:--</span>
+    <svg class="ring" id="ring" aria-hidden="true"></svg>
+    <div class="scrawl">
+      <!-- painted twice on phone: .halo carries the wide paper stroke, the real
+           h1 sits on top stroked in ink so the type thickens without blur -->
+      <h1 class="halo" aria-hidden="true"><span class="n" id="bignh">180</span> lectures<br>
+      are happening<br>
+      <span class="hot">without you.</span>
+      <span class="kick">nobody is checking.</span></h1>
+      <h1><span class="n" id="bign">180</span> lectures<br>
+      are happening<br>
+      <span class="hot">without you.</span>
+      <span class="kick">nobody is checking.</span></h1>
+    </div>
+  </section>
+
+  <div class="read">
+    <p class="claim">
+      <span class="blue">Blue is your courseload.</span> <b>Everything else is
+      also happening today</b>. Ten minutes away, door unlocked, nobody
+      asking who you are.
+    </p>
+
+    <div class="key">
+      <div class="live"><i></i><span id="livetxt">Live</span></div>
+      <hr>
+      <div><i class="i-mine"></i> Your courseload <span class="n">5</span></div>
+      <div><i class="i-loose"></i> Running right now <span class="n" id="know">222</span></div>
+      <hr>
+      <div>Buildings in play <span class="n" id="kb">65</span></div>
+      <div>Seats going empty <span class="n" id="ks">...</span></div>
+      <div>People checking IDs <span class="n">0</span></div>
+    </div>
+  </div>
+
+  <section class="tix">
+    <div class="tix-head"><span>Three reasons, torn off</span><span>Admit one &middot; any lecture</span></div>
+
+    <article class="stub">
+      <div class="tear"><span>Admit one &middot; no name required</span></div>
+      <div class="body">
+        <div class="tno"><b>01</b><i>/ the gap</i></div>
+        <h3>Two hours between classes is not a break.
+        <span style="color:var(--loose)">It's an unspent ticket.</span></h3>
+        <p>You were going to sit in the library and look at your phone. Instead: walk
+        eight minutes, open a door, sit at the back of a third&#8209;year lecture and
+        <span class="hl">knowledgemaxx your way out of a break knowing something you
+        didn't know going in.</span> Nobody takes attendance in a room of two hundred,
+        and your tuition already covered it.</p>
+        <div class="fare"><span>Duration <b>2h 00m</b></span><span>Fare <b>Already paid</b></span></div>
       </div>
+    </article>
 
-      <p class="count-line">
-        <span class="count" id="count" aria-live="polite">288</span>
-        <span class="count-unit">lectures<br>happening<br>right now</span>
-      </p>
+    <article class="stub">
+      <div class="tear"><span>Admit one &middot; no name required</span></div>
+      <div class="body">
+        <div class="tno"><b>02</b><i>/ the trick</i></div>
+        <h3>Work in a stranger's lecture. The professor is
+        <span style="color:var(--loose)">your background music.</span></h3>
+        <p>Bring the laptop, do your readings. <span class="hl">A lecture hall is the
+        one room where you can't scroll, can't take a call, can't talk to anyone, so you
+        just work.</span> Caf&eacute;s let you off. A stranger's lecture doesn't. When your
+        brain gives out, look up and listen for ten minutes.</p>
+        <div class="fare"><span>Seat <b>Back row</b></span><span>Wifi <b>Yes</b></span></div>
+      </div>
+    </article>
 
-      <p class="board-sub" id="board-label">
-        spread across <strong id="nbuild">54</strong> buildings, most of them
-        a ten&#8209;minute walk away, and you were not invited to a single one.
-      </p>
+    <article class="stub">
+      <div class="tear"><span>Admit one &middot; no name required</span></div>
+      <div class="body">
+        <div class="tno"><b>03</b><i>/ the point</i></div>
+        <h3>You get about forty courses out of
+        <span class="n" id="kc">1,787</span>. The rest is
+        <span style="color:var(--loose)">a world you never see.</span></h3>
+        <p>Whatever you picked at seventeen became your entire version of this place.
+        Meanwhile a room away, people are thinking about cities, or proteins, or Ottoman
+        tax records, and it has never once occurred to you.
+        <span class="hl">An hour in someone else's lecture is perspective: proof that
+        your way of seeing things is one of many.</span> Nothing else you do with a
+        free hour does that.</p>
+        <div class="fare"><span>Catalogue <b><span id="kc3">1,787</span> courses</b></span><span>Yours <b>~40</b></span></div>
+      </div>
+    </article>
+  </section>
 
-      <!-- departure board -->
-      <ul class="ticker mono" id="ticker" aria-label="A sample of lectures running now"></ul>
-    </div>
+  <section class="defn">
+    <p class="hw">son&middot;der</p>
+    <p class="pos">n.</p>
+    <p class="gloss">the realization that each passer&#8209;by has a life as vivid and
+    complex as your own. <span class="em">Every one of them on their way to a
+    room you've never been in.</span></p>
+    <p class="turn">That's the whole idea.<br>Not scheduling. The vertigo.</p>
+  </section>
 
-    <h1 class="headline">
-      You are paying<br>
-      for <em>all of it.</em>
-    </h1>
-
-    <p class="deck">
-      Somewhere on campus right now a person who has spent thirty years on one
-      subject is explaining it to a room, and there are empty seats in that room,
-      and nobody at the door is checking anything.
-    </p>
-
-    <div class="cta-row">
-      <a class="cta" href="app/explore.html">Show me what's on<span class="arrow" aria-hidden="true">&#8594;</span></a>
-      <span class="cta-note mono">free · no login · made by a student</span>
-    </div>
+  <div class="end">
+    <h2>Go be a stranger<br>in someone's class</h2>
+    <a class="go" href="app/explore.html">Show me what's on now →</a>
   </div>
 
-  <div class="scroll-hint mono" aria-hidden="true">
-    <span>keep going</span>
-    <span class="scroll-rule"></span>
-  </div>
-</header>
-
-<!-- ─────────── THE PITCH ─────────── -->
-<main>
-<section class="pitch">
-
-  <article class="bit">
-    <span class="bit-tag mono">01 / the gap</span>
-    <h2>Two hours between classes is not a break. It's an unspent ticket.</h2>
-    <p>
-      You were going to sit in the library and look at your phone. Instead: walk
-      eight minutes, open a door, and sit at the back of a third-year lecture on
-      something you will never otherwise learn. Nobody takes attendance in a room
-      of two hundred.
-    </p>
-  </article>
-
-  <article class="bit">
-    <span class="bit-tag mono">02 / the trick</span>
-    <h2>Work in a stranger's lecture and make the professor your background music.</h2>
-    <p>
-      Bring the laptop. Do your actual readings. But instead of the hum of a café
-      you get a live human being narrating <em>Technology in the Modern World</em>
-      at you for an hour. When your brain gives out on your own work, you look up
-      and learn something for free. Worst-case you got a quiet desk.
-    </p>
-  </article>
-
-  <article class="bit">
-    <span class="bit-tag mono">03 / the point</span>
-    <h2>Knowledgemaxxing is real and your tuition is already spent.</h2>
-    <p>
-      You bought access to the entire institution and you have been using
-      roughly five courses of it. Every lecture you walk into is one you already
-      paid for. The optimal number of random lectures attended before graduation
-      is not zero. It is, conservatively, quite a lot.
-    </p>
-  </article>
-
-</section>
-
-<!-- ─────────── THE NAME ─────────── -->
-<section class="sonder-def">
-  <p class="def-word">son·der</p>
-  <p class="def-body">
-    <span class="def-pos">n.</span> the realization that each passer&#8209;by has a life
-    as vivid and complex as your own — <span class="def-gloss">every one of them
-    on their way to a room you've never been in.</span>
-  </p>
-  <p class="def-tail">
-    That's the whole idea. Not scheduling. The vertigo.
-  </p>
-</section>
-
-<!-- ─────────── CLOSE ─────────── -->
-<section class="close">
-  <p class="close-stat mono">
-    <span id="closeC">3,220</span> courses &nbsp;·&nbsp; <span id="closeB">65</span> buildings
-    &nbsp;·&nbsp; <span id="closeM">11,929</span> meetings &nbsp;·&nbsp; 0 logins
-  </p>
-  <h2 class="close-head">Go sit somewhere you don't belong.</h2>
-  <a class="cta cta-big" href="app/explore.html">Open the map<span class="arrow" aria-hidden="true">&#8594;</span></a>
-</section>
-</main>
-
-<footer class="foot mono">
-  <span>Sonder · an independent student project · not affiliated with the University of Toronto</span>
-  <span>Timetable data from UofT TTB · Geometry from Toronto Open Data</span>
-</footer>
+  <p class="fine">No login · no tracking · no affiliation with the University of Toronto<br>
+  Made by one student who should have been studying</p>
+</div>
 
 <script src="_data.js"></script>
-<script src="app.js"></script>
+<script>
+(function(){
+var D=(typeof SONDER!=='undefined')?SONDER:window.SONDER; if(!D)return;
+
+var H0=9,H1=21;                       // grid spans 9am-9pm
+var SLOT0=480,SLOT=15;
+var DAYN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var $=function(i){return document.getElementById(i)};
+var rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ── where in the week ── */
+var n=new Date(),d=n.getDay(),m=n.getHours()*60+n.getMinutes(),live=true;
+if(d===0||d===6){d=1;m=660;live=false}
+else if(m<SLOT0+60){m=660;live=false}
+else if(m>1200){d=d===5?1:d+1;m=660;live=false}
+
+var row=D.grid[String(d)]||[];
+var count=row[Math.max(0,Math.min(55,Math.floor((m-SLOT0)/SLOT)))]||0;
+
+function fmt(x){var h=(x/60)|0,mm=x%60,ap=h>=12?'pm':'am',hh=h%12||12;
+  return hh+(mm?':'+(mm<10?'0':'')+mm:'')+ap}
+
+$('clk').textContent=DAYN[d].slice(0,3)+' '+fmt(m);
+$('sheetday').textContent=DAYN[d]+', fall term';
+$('livetxt').textContent=live?'Live · right now':'Next: '+DAYN[d].slice(0,3)+' 11am';
+
+/* ── build the printed grid ── */
+var grid=$('grid'),frag=document.createDocumentFragment();
+for(var h=H0;h<=H1;h++){
+  var c=document.createElement('div');c.className='hh';
+  c.style.gridRow=(h-H0+1);
+  c.textContent=(h%12||12)+(h<12?'a':'p');
+  frag.append(c);
+}
+var DAYS=['Mon','Tue','Wed','Thu','Fri'];
+var ONEDAY=matchMedia('(max-width:700px)').matches;   // phone: today only
+var cols=[];
+for(var i=0;i<5;i++){
+  var col=document.createElement('div');col.className='col'+((i+1)===d?' today':'');
+  col.style.gridColumn=(i+2);
+  var hd=document.createElement('div');hd.className='dayhead';
+  hd.textContent=(ONEDAY&&(i+1)===d)?DAYN[d]:DAYS[i];
+  col.append(hd);frag.append(col);cols.push(col);
+}
+grid.append(frag);
+
+var ROW=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row'))||46;
+function topOf(mins){return (mins/60-H0)*ROW}
+
+/* ── your five: obedient blocks in the blue column ── */
+// A plausible courseload: five real meetings spread across the week.
+var narrowM=matchMedia('(max-width:700px)').matches;
+var mine=[],seen={};
+// one per weekday, so a normal courseload reads across the whole week
+for(var dd=1;dd<=5;dd++){
+  var cand=D.pool.filter(function(x){return x.d===dd&&x.st>=H0*60&&x.en<=H1*60});
+  if(!cand.length){
+    // no sampled meeting that day: reseat one from a heavier day
+    cand=D.pool.filter(function(x){return x.st>=H0*60&&x.en<=H1*60});
+    if(!cand.length)continue;
+    var pick=cand[(dd*37)%cand.length];
+    mine.push({c:pick.c,t:pick.t,d:dd,st:pick.st,en:pick.en,b:pick.b,bn:pick.bn,r:pick.r,cap:pick.cap});
+    continue;
+  }
+  mine.push(cand[(dd*13)%cand.length]);
+}
+// On a phone only today's column is in the DOM — the other four are
+// display:none — so a one-per-weekday courseload strands 4 of 5 blocks in
+// hidden columns and "blue is your courseload" shows almost nothing.
+// Phone therefore reseats the whole courseload onto today, spread across the
+// day so the blue reads as a real schedule rather than one stray block.
+if(ONEDAY){
+  var todayPool=D.pool.filter(function(x){
+    return x.d===d&&x.st>=H0*60&&x.en<=H1*60;
+  }).sort(function(a,b){return a.st-b.st});
+
+  if(todayPool.length){
+    var WANT=4, picked=[], usedC={};
+    // spread the picks across the day's span instead of taking the first N,
+    // which would bunch every blue block into the morning
+    for(var pi=0;pi<WANT;pi++){
+      var target=H0*60+((H1-H0)*60)*((pi+0.5)/WANT);
+      var best=null,bestD=1e9;
+      for(var pj=0;pj<todayPool.length;pj++){
+        var cnd=todayPool[pj];
+        if(usedC[cnd.c])continue;
+        var dist=Math.abs(cnd.st-target);
+        if(dist<bestD){bestD=dist;best=cnd}
+      }
+      if(best){usedC[best.c]=1;picked.push(best)}
+    }
+    mine=picked;
+  }
+}
+mine.forEach(function(x,mi){
+  var el=document.createElement('div');el.className='mine';
+  el.style.top=Math.max(16,topOf(x.st))+'px';
+  el.style.height=Math.min(narrowM?30:46,Math.max(15,topOf(x.en)-topOf(x.st)-2))+'px';
+  // On a phone the blocks are 58% wide, so alternate which side they sit on —
+  // two full-width bars stacked down one column looked like rules, not courses.
+  if(narrowM){el.style.left=(mi%2?'41%':'4px');}
+  el.textContent=x.c.replace(/[HY]1$/,'');
+  cols[x.d-1].append(el);
+});
+
+/* ── the escape: everything else, breaking out of the cells ── */
+var mineC={};
+mine.forEach(function(x){mineC[x.c]=1});
+var loose=D.pool.filter(function(x){
+  return x.st>=H0*60&&x.st<H1*60&&!mineC[x.c];
+});
+for(var i=loose.length-1;i>0;i--){var j=Math.random()*(i+1)|0,t=loose[i];loose[i]=loose[j];loose[j]=t}
+
+// Fewer on a phone: the point is overflow, not an unreadable smear.
+var narrow=matchMedia('(max-width:700px)').matches;
+var N=Math.min(narrow?58:104,loose.length);
+
+// The 260-course sample is Monday-heavy (94 Mon vs 10 Fri), but the real
+// concurrency grid says Wednesday is the busiest day on campus and Friday
+// still runs ~195 at once. Left alone, the columns would understate Wed-Fri.
+// So: hand each day a share of the blocks proportional to its TRUE 11am
+// concurrency, and re-seat spare sampled courses into the short columns.
+var ordered=[];
+if(ONEDAY){
+  // phone: one day, shown properly. Every block is a real meeting on this day;
+  // if the sample is thin for today, top up from other days at their real hours.
+  var todays=loose.filter(function(x){return x.d===d});
+  var others=loose.filter(function(x){return x.d!==d});
+  var want=Math.min(N,Math.max(34,todays.length));
+  var pick=todays.slice(0,want);
+  // Top up from other days, re-seated at their own real hours. The sample
+  // thins out badly after 5pm, so bias the top-ups late: the column should
+  // stay busy all the way to 8pm rather than dying at dinner.
+  var late=others.filter(function(x){return x.st>=15*60});
+  var rest=others.filter(function(x){return x.st<15*60});
+  while(pick.length<want&&(late.length||rest.length)){
+    pick.push((late.length&&(pick.length%2||!rest.length))?late.pop():rest.pop());
+  }
+  pick.forEach(function(x){ordered.push({m:x,day:d})});
+}else{
+  // The 260-course sample is Monday-heavy (94 Mon vs 10 Fri), but the real
+  // concurrency grid says Wednesday is the busiest day on campus and Friday
+  // still runs ~195 at once. Left alone, the columns would understate Wed-Fri.
+  var dayW=[1,2,3,4,5].map(function(dd){return (D.grid[String(dd)]||[])[12]||0});
+  var wTot=dayW.reduce(function(a,b){return a+b},0)||1;
+  var quota=dayW.map(function(w){return Math.max(2,Math.round(N*w/wTot))});
+
+  var byDay=[[],[],[],[],[]];
+  loose.forEach(function(x){ if(x.d>=1&&x.d<=5) byDay[x.d-1].push(x); });
+
+  var spare=[];
+  for(var dI=0;dI<5;dI++){
+    var take=byDay[dI].splice(0,quota[dI]);
+    take.forEach(function(x){ ordered.push({m:x,day:dI+1}); });
+    spare=spare.concat(byDay[dI]);
+  }
+  for(var dI=0;dI<5;dI++){
+    var have=ordered.filter(function(o){return o.day===dI+1}).length;
+    while(have<quota[dI]&&spare.length){ ordered.push({m:spare.pop(),day:dI+1}); have++; }
+  }
+}
+ordered.sort(function(a,b){return a.m.st-b.m.st});
+// even out each column: if a day's blocks bunch into one stretch of hours,
+// respread them across the day so no column reads as dead below the fold
+var perDay=[[],[],[],[],[]];
+ordered.forEach(function(o){perDay[o.day-1].push(o)});
+if(ONEDAY){
+  // Phone shows one column, and the real pool thins out after 6pm, so keeping
+  // each block at its true hour leaves the bottom third of the sheet as empty
+  // ruled paper. Spread the single column evenly over the whole 9am-9pm span
+  // instead — these blocks are texture, not appointments, and the point is that
+  // the day is full end to end.
+  var one=perDay[d-1]||[];
+  if(one.length>2){
+    var loP=H0*60+20, hiP=H1*60-40, stepP=(hiP-loP)/one.length;
+    one.forEach(function(o,idx){
+      o.slot=loP+stepP*idx+Math.random()*stepP*.45;
+    });
+  }
+}
+if(!ONEDAY)perDay.forEach(function(list){
+  if(list.length<3)return;
+  var lo=H0*60+30, hi=H1*60-30, step=(hi-lo)/list.length;
+  list.forEach(function(o,idx){
+    // blend the even ladder with the meeting's real hour: columns stay full
+    // top-to-bottom without a block drifting far from when it actually runs
+    var ladder=lo+step*idx+Math.random()*step*.5;
+    o.slot=o.m.st*0.55+ladder*0.45;
+  });
+});
+
+var sheet=document.querySelector('.sheet');
+var SHEETH=(H1-H0+1)*ROW;
+var shR=sheet.getBoundingClientRect();
+
+// The timetable fills edge to edge. The headline rides ON TOP of it — the
+// grid is meant to be visibly overflowing underneath, not politely parted.
+var lanes=[];
+
+for(var k=0;k<ordered.length;k++){
+  var o=ordered[k],x=o.m,xd=o.day;
+  var el=document.createElement('div');el.className='loose';
+  var code=document.createElement('span');code.className='lc';
+  code.textContent=x.c.replace(/[HY]1$/,'');
+  el.append(code);
+
+  // Phone and desktop both scatter: these are texture, not appointments.
+  // Nobody reads the fourth block — it's there to say "there is more than this".
+  el.append(document.createTextNode(' '+x.t.slice(0,narrow?34:34)));
+  var baseL=narrow?0:((xd-1)/5*100);
+  // Phone blocks vary in width as well as position: a column of same-width
+  // cards all starting near the left edge read as a tidy list, which is the
+  // opposite of the point. Narrow cards get pushed further right.
+  // Phone blocks are centred on the column rather than scattered across it:
+  // the leftover space is split evenly, with only a small wobble so the stack
+  // still looks hand-dropped instead of ruled. Desktop keeps its free scatter.
+  var wv=narrow?(.60+Math.random()*.32):0;                 // 60%-92% of column
+  var slackC=narrow?Math.max(0,(100-wv*100)/2):0;          // even margin each side
+  var jitterX=narrow
+    ?Math.max(1.5,Math.min(100-wv*100-1.5,slackC+(Math.random()*6-3)))
+    :(Math.random()*20-10);
+  el.style.left=narrow
+    ? jitterX.toFixed(1)+'%'
+    : 'clamp(2px, calc('+baseL+'% + '+jitterX+'px), calc(100% - 128px))';
+
+  var y=topOf(o.slot!=null?o.slot:x.st)+(Math.random()*14-7);
+  y=Math.max(14,Math.min(SHEETH-24,y));
+
+  var H=narrow?25:26, W=narrow?(wv*(shR.width||350)):200;
+  var lx=narrow?(jitterX/100*(shR.width||350)):((xd-1)/5*(shR.width||360)+jitterX);
+  for(var g2=0;g2<lanes.length;g2++){
+    var L=lanes[g2];
+    if(Math.abs(L[0]-y)<H-6 && lx<L[2]+W && lx+W>L[2]){ y=L[0]+H-4; }
+  }
+  y=Math.min(SHEETH-24,y);
+  lanes.push([y,y+H,lx]);
+
+  el.style.top=y+'px';
+  el.style.maxWidth=narrow?((wv*100).toFixed(1)+'%'):'min(56vw, 230px)';
+  el.style.overflow='hidden';
+  el.style.textOverflow='ellipsis';
+  el.style.transform='rotate('+(Math.random()*7-3.5).toFixed(2)+'deg)';
+  el.style.animationDelay=(rm?0:(k*18))+'ms';
+  sheet.append(el);
+}
+
+/* ── numbers ── */
+$('know').textContent=count;
+$('kb').textContent=D.nbuildings;
+['kc','kc2','kc3'].forEach(function(id){
+  var n=$(id); if(n)n.textContent=D.ncourses.toLocaleString();
+});
+
+// empty seats: real capacities from the sample, scaled to the live count
+var samp=D.pool.filter(function(x){return x.d===d});
+var avgCap=samp.reduce(function(a,b){return a+b.cap},0)/Math.max(1,samp.length);
+$('ks').textContent=Math.round(count*avgCap*0.22).toLocaleString();
+
+/* hand-drawn ring around the count — traced from the element's real box */
+function drawRing(){
+  var t=$('bign'),sh=document.querySelector('.sheet'),svg=$('ring');
+  if(!t||!sh||!svg)return;
+  var a=t.getBoundingClientRect(),b=sh.getBoundingClientRect();
+  var x=a.left-b.left,y=a.top-b.top,w=a.width,h=a.height;
+  var cx=x+w/2,cy=y+h/2,rx=w/2+16,ry=h/2+9;
+  svg.setAttribute('width',b.width);svg.setAttribute('height',b.height);
+  svg.setAttribute('viewBox','0 0 '+b.width+' '+b.height);
+  svg.style.left='0';svg.style.top='0';
+  // a deliberately wobbly ellipse, overshooting where it closes
+  var d='M '+(cx+rx*.92)+' '+(cy-ry*.44)
+   +' C '+(cx+rx*1.05)+' '+(cy+ry*.55)+', '+(cx+rx*.45)+' '+(cy+ry*1.16)+', '+cx+' '+(cy+ry*1.03)
+   +' C '+(cx-rx*.62)+' '+(cy+ry*1.1)+', '+(cx-rx*1.08)+' '+(cy+ry*.4)+', '+(cx-rx*.97)+' '+(cy-ry*.3)
+   +' C '+(cx-rx*.88)+' '+(cy-ry*1.02)+', '+(cx-rx*.2)+' '+(cy-ry*1.12)+', '+(cx+rx*.42)+' '+(cy-ry*1.0)
+   +' C '+(cx+rx*.95)+' '+(cy-ry*.9)+', '+(cx+rx*1.03)+' '+(cy-ry*.2)+', '+(cx+rx*.86)+' '+(cy+ry*.3);
+  svg.innerHTML='<path d="'+d+'"/>';
+  // park the margin note just under-right of the ring
+  var note=$('note');
+  if(note){
+    var sc2=document.querySelector('.scrawl');
+    var r=sc2?sc2.getBoundingClientRect():null;
+    if(r){ note.style.left=Math.max(8,(r.left-b.left)+18)+'px'; note.style.top=(r.bottom-b.top+6)+'px'; }
+  }
+}
+
+var el=$('bign');
+// the phone halo layer is a visual duplicate, so it has to count up in step
+var elh=document.getElementById('bignh');
+function setN(v){el.textContent=v;if(elh)elh.textContent=v}
+if(rm){setN(count)}
+else{var t0=null;requestAnimationFrame(function s(ts){t0=t0||ts;
+  var p=Math.min(1,(ts-t0)/1000);
+  setN(Math.round(count*(1-Math.pow(1-p,3))));
+  if(p<1)requestAnimationFrame(s);else{setN(count);drawRing()}})}
+if(rm)drawRing();
+addEventListener('resize',function(){clearTimeout(window.__rt);window.__rt=setTimeout(drawRing,140)});
+document.fonts&&document.fonts.ready.then(drawRing);
+})();
+</script>
 </body>
 </html>
