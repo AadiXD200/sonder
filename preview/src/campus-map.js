@@ -1016,7 +1016,9 @@ export function mountCampusMap(root, options = {}) {
     resize();
     setupLocation();
     const canvas = renderer.domElement;
+    let pendingTouchTap = null;
     listenScene(canvas, "pointerdown", (e) => {
+      pendingTouchTap = null;
       activePointers.add(e.pointerId);
       if (activePointers.size === 1) {
         lastPointer = { id: e.pointerId, x: e.clientX, y: e.clientY };
@@ -1063,10 +1065,24 @@ export function mountCampusMap(root, options = {}) {
         !pointerMoved &&
         e.button === 0;
       activePointers.delete(e.pointerId);
-      if (tapped) select(hitTest(e.clientX, e.clientY));
+      if (tapped) {
+        const building = hitTest(e.clientX, e.clientY);
+        // Complete touch selection on click, after the browser fixes its target.
+        // Opening a host panel on pointerup can move another control under the
+        // finger before the compatibility click, accidentally activating it.
+        if (e.pointerType === "touch") pendingTouchTap = { building };
+        else select(building);
+      }
       if (!activePointers.size) lastPointer = null;
     });
+    listenScene(canvas, "click", () => {
+      if (!pendingTouchTap) return;
+      const { building } = pendingTouchTap;
+      pendingTouchTap = null;
+      select(building);
+    });
     const cancelPointer = (e) => {
+      if (e.type === "pointercancel") pendingTouchTap = null;
       activePointers.delete(e.pointerId);
       pointerMoved = true;
       if (!activePointers.size) lastPointer = null;

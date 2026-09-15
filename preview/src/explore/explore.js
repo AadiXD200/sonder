@@ -38,6 +38,7 @@ const topics = SUBJECTS;
 const mobile = matchMedia("(max-width:760px)");
 const lifecycle = new AbortController();
 let map,
+  mapSelection = null,
   mapLoadPromise,
   draft,
   disposed = false,
@@ -48,6 +49,8 @@ let visibleLimit = 40,
   loadingCatalogue = false,
   userChanged = false,
   locationRequest = 0;
+let sharedNoticeShown = false,
+  sharedNoticeTimer;
 const esc = (value) =>
   String(value ?? "").replace(
     /[&<>"']/g,
@@ -91,32 +94,46 @@ function syncURL() {
   if (location.hash !== hash)
     history.replaceState(null, "", location.pathname + location.search + hash);
 }
+function showSharedNotice() {
+  if (sharedNoticeShown || !hadSharedState) return;
+  sharedNoticeShown = true;
+  const selected = all.find((meeting) => meeting.id === state.selected);
+  $("shared-banner-copy").textContent = selected
+    ? `${selected.code} · ${selected.title}`
+    : "Your filters and map position are restored.";
+  $("shared-banner").hidden = false;
+  clearTimeout(sharedNoticeTimer);
+  sharedNoticeTimer = setTimeout(() => {
+    if (!disposed) $("shared-banner").hidden = true;
+  }, 6000);
+}
 $("sonder").innerHTML = `
 <div class="app-shell">
-<header class="masthead"><a class="logo" href="./explore.html" aria-label="Sonder explore">SON<b>DER</b></a><span class="masthead-note">TIMETABLE, UNSUPERVISED.</span><button id="preview-info" class="preview-stamp">UI PREVIEW <span>↗</span></button></header>
+<header class="masthead"><a class="logo" href="../" aria-label="Sonder — home">SON<b>DER</b></a><span class="masthead-note">TIMETABLE, UNSUPERVISED.</span><button id="preview-info" class="preview-stamp">UI PREVIEW <span>↗</span></button></header>
 <main class="workspace">
   <section class="workspace-top" aria-label="Explore controls">
-    <div class="page-title"><h1>Find a detour.</h1><p>ST. GEORGE <span>·</span> <button id="change-time" aria-label="Change time filters"><span id="current-time"></span> ${icon("chevron")}</button><span id="data-label" class="demo-label">SAMPLE DAY</span></p></div>
+    <div class="page-title"><h1>Find a detour.</h1><p><span class="campus-context">ST. GEORGE</span> <span class="campus-context">·</span> <button id="change-time" aria-label="Change time filters"><span id="current-time"></span> ${icon("chevron")}</button><span id="data-label" class="demo-label">SAMPLE DAY</span></p></div>
     <div class="main-actions"><button id="sonderate" class="sonderate" title="Pick a random class starting soon">${icon("shuffle")} Sonderate ${icon("arrow")}</button><button id="open-filters" class="utility-button" aria-label="Filters" aria-haspopup="dialog">${filterIcon} <span class="filter-label">Filters</span> <span id="filter-count" hidden></span></button><button id="toggle-search" class="utility-button search-toggle" aria-expanded="false" aria-controls="search-panel" aria-label="Find a class">${icon("search")}<span>Find a class</span></button></div>
   </section>
-  <div id="search-panel" class="search-panel" hidden><label for="search" class="sr-only">Search classes</label>${icon("search")}<input id="search" type="search" placeholder="Try psychology, climate, or computer science…" autocomplete="off"><button id="close-search" aria-label="Close and clear search">${icon("close")}</button></div>
+  <div id="search-panel" class="search-panel" hidden><label for="search" class="sr-only">Search classes</label>${icon("search")}<input id="search" type="search" placeholder="Topic or course code…" autocomplete="off" enterkeyhint="search" maxlength="200"><button id="close-search" aria-label="Close and clear search">${icon("close")}</button></div>
   <div class="context-bar"><button id="open-location">${icon("pin")} Walks from <span id="pin-label">campus centre</span> <span aria-hidden="true">↗</span></button><button id="share-link">Share link ${icon("diagonal")}</button></div>
   <div class="panes">
     <section class="class-pane" aria-label="Nearby classes">
-      <div class="pane-heading"><h2 id="results-title">STARTING SOON</h2><div class="list-heading-actions"><span id="result-count">08 CLASSES</span><button id="toggle-map" aria-expanded="false" aria-controls="map-pane">${icon("map")} <span>Show map</span></button></div></div><div class="column-headings" aria-hidden="true"><span>CLASS</span><span>WHEN</span><span>WHERE</span><span>WALK</span></div>
+      <div class="pane-heading"><h2 id="results-title" tabindex="-1">STARTING SOON</h2><div class="list-heading-actions"><span id="result-count">08 CLASSES</span><button id="toggle-map" aria-expanded="false" aria-controls="map-pane">${icon("map")} <span>Show map</span></button></div></div><div class="column-headings" aria-hidden="true"><span>CLASS</span><span>WHEN</span><span>WHERE</span><span>WALK</span></div>
       <div id="active-summary" class="active-summary" hidden><span></span><button id="clear-all" aria-label="Clear search and filters">${icon("close")}</button></div>
       <div id="lecture-list" class="lecture-list"></div>
       <p class="list-note">A different room. A different rabbit hole.</p>
     </section>
     <section id="map-pane" class="map-pane" aria-label="Campus map">
-      <div class="pane-heading map-heading"><h2>THE CAMPUS</h2><span>pick a building, peek inside. <span aria-hidden="true">↙</span></span></div>
+      <div class="pane-heading map-heading"><h2>THE CAMPUS</h2><span class="map-hand-note">pick a building, peek inside. <span aria-hidden="true">↙</span></span><span id="mobile-map-hint" class="mobile-map-hint">Tap a building to explore</span></div>
       <div class="map-frame"><div id="explore-map" class="embedded-map"></div><div class="map-origin">${icon("pin")} <span id="map-pin-label">Campus centre</span><span>· drag the blue pin</span></div><div class="map-bottom"><span class="map-credit"><a href="https://open.toronto.ca/dataset/3d-massing/" target="_blank" rel="noreferrer">Toronto Open Data</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a></span><button id="map-sources">Sources ↗</button></div></div>
+      <aside id="map-building-preview" class="map-building-preview" aria-label="Selected building" hidden><button id="map-building-classes" class="map-building-classes"><span class="map-building-copy"><span id="map-building-day" class="eyebrow"></span><strong id="map-building-name"></strong><span id="map-building-count"></span></span>${icon("arrow")}</button><button id="dismiss-map-building" class="icon-button" aria-label="Dismiss building preview">${icon("close")}</button></aside>
     </section>
   </div>
 </main>
 <footer class="app-footer"><span>NOT ON YOUR TIMETABLE. STILL ON YOUR CAMPUS.</span><span id="data-footer">SAMPLE TIMETABLE / FALL 2026</span></footer>
 </div>
-<nav class="mobile-switch" aria-label="View"><button id="show-list" aria-pressed="true">${icon("list")} Classes <span id="mobile-count">8</span></button><button id="show-map" aria-pressed="false">${icon("map")} Campus map</button></nav>
+<nav class="mobile-switch" aria-label="Explore navigation"><button id="show-list" aria-pressed="true">${icon("list")} Classes <span id="mobile-count">8</span></button><button id="show-map" aria-pressed="false" aria-label="Campus map">${icon("map")} Map</button></nav>
 <dialog id="filters-dialog" class="sheet filters-sheet" aria-labelledby="filters-title"><form id="filter-form"><header class="sheet-heading"><div><p class="eyebrow">A LITTLE MORE SPECIFIC</p><h2 id="filters-title">Your kind of detour.</h2></div><button type="button" id="close-filters" class="icon-button" aria-label="Close filters">${icon("close")}</button></header><div class="sheet-body">
  <fieldset class="subject-field"><legend>What sounds interesting?</legend><div class="topic-chips">${topics.map((topic) => `<button type="button" data-topic="${topic}" aria-pressed="${topic === "Everything"}">${topic}</button>`).join("")}</div></fieldset>
  <div class="filter-grid"><label>Term<select id="term"><option value="F">Fall 2026</option><option value="S">Winter 2027</option></select></label><label>Day<select id="day">${DAYS.map((day, i) => `<option value="${i + 1}">${day}</option>`).join("")}</select></label></div>
@@ -129,6 +146,7 @@ $("sonder").innerHTML = `
 <dialog id="about-preview" class="sheet about-sheet" aria-labelledby="about-title"><header class="sheet-heading"><div><p class="eyebrow">NOT QUITE THE REAL THING</p><h2 id="about-title">A preview of Sonder.</h2></div><button id="close-preview" class="icon-button" aria-label="Close preview information">${icon("close")}</button></header><div class="sheet-body"><p>The map uses sourced campus geometry. The SAMPLE DAY label means meetings and descriptions are fixtures; the label changes when all three published catalogue files are ready.</p><p>Sonderate picks a reachable class starting within ${SONDERATE_WINDOW_MINUTES} minutes of your gap’s start. Walking estimates use your pin and building coordinates. Search, ranking, and filters run locally.</p><p>Shared links include your filters and approximate pin position. No account or browser storage is used. <button id="retry-data" class="text-button">Check for published timetable ↗</button><span id="data-status" role="status"></span></p></div></dialog>
 <dialog id="location-dialog" class="sheet" aria-labelledby="location-title"><header class="sheet-heading"><div><p class="eyebrow">START HERE</p><h2 id="location-title">Where are you walking from?</h2></div><button id="close-location" class="icon-button" aria-label="Close location">${icon("close")}</button></header><div class="sheet-body"><p>Campus centre is the default. Choose a building, use your location, or drag the blue pin on the map.</p><label class="time-field">Start near a building<select id="location-building"><option value="">Choose a building…</option></select></label><div class="location-actions"><button id="use-location" class="ink-button">Use my location</button><button id="centre-location" class="text-button">Campus centre</button><button id="move-pin" class="text-button">Move pin on map ↗</button></div><p id="location-status" class="filter-note" role="status"></p><p class="filter-note">Shared links include this approximate position.</p></div></dialog>
 <dialog id="share-dialog" class="sheet" aria-labelledby="share-title"><header class="sheet-heading"><h2 id="share-title">Share this detour.</h2><button id="close-share" class="icon-button" aria-label="Close share link">${icon("close")}</button></header><div class="sheet-body"><label class="time-field">Copy this link<input id="share-url" type="url" readonly></label><p class="filter-note">Includes your filters and approximate pin position.</p></div></dialog>
+<div id="shared-banner" class="shared-banner" hidden role="status" aria-live="polite"><span><strong>Shared detour loaded</strong><small id="shared-banner-copy"></small></span><button id="close-shared-banner" class="icon-button" aria-label="Dismiss shared link notice">${icon("close")}</button></div>
 <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>`;
 
 function ensureMap() {
@@ -149,12 +167,14 @@ function ensureMap() {
           setPin(pin);
         },
         onSelect(building) {
-          if (selectingFromList || disposed) return;
+          if (disposed) return;
+          mapSelection = building;
+          renderMapSelection();
+          if (selectingFromList) return;
           state.building = building
             ? { codes: building.codes, name: building.name }
             : null;
           changed();
-          if (building && mobile.matches) setView("list");
         },
       });
       return map.ready;
@@ -162,6 +182,7 @@ function ensureMap() {
     .then((ok) => {
       if (ok && !disposed) {
         map.setLocation(state.pin);
+        syncMapControlLabels();
         updateMapCounts();
         if (state.building?.codes[0]) focusBuilding(state.building.codes[0]);
       }
@@ -189,6 +210,36 @@ function focusBuilding(code) {
         "This building has no selectable mesh. Its name, room, and walk remain in the class list.";
   });
 }
+// The map owns selection and the camera; this shell owns the second tap into classes.
+// Keeping this separate from state.building also covers “Show on map” from a class.
+function renderMapSelection() {
+  const panel = $("map-building-preview");
+  panel.hidden = !mapSelection;
+  $("mobile-map-hint").textContent = mapSelection
+    ? "Tap its name to see classes"
+    : "Tap a building to explore";
+  if (!mapSelection) return;
+  const building = { codes: mapSelection.codes, name: mapSelection.name };
+  const count = available({ building }).length;
+  const hasCatalogueCode = building.codes.some((code) =>
+    Object.hasOwn(buildings, code),
+  );
+  $("map-building-day").textContent =
+    `${DAYS[state.day - 1]} · ${terms[state.term]}`;
+  $("map-building-name").textContent = building.name;
+  $("map-building-count").textContent = !hasCatalogueCode
+    ? "No timetable listings for this building"
+    : count
+      ? `View ${count} ${count === 1 ? "class" : "classes"} →`
+      : "No matches with these filters · View classes →";
+  $("map-building-classes").disabled = !hasCatalogueCode;
+  $("map-building-classes").setAttribute(
+    "aria-label",
+    hasCatalogueCode
+      ? `See classes in ${building.name}`
+      : `${building.name}: no timetable listings`,
+  );
+}
 function updateMapCounts() {
   if (!map || map.status !== "ready") return;
   const counts = new Map();
@@ -215,7 +266,7 @@ function topicGrid() {
   )
     .map(
       ([id, topic]) =>
-        `<button type="button" data-browse="${esc(id)}">${esc(topic.label)}</button>`,
+        `<button type="button" data-browse="${esc(id)}" aria-label="Search ${esc(topic.label)}">${esc(topic.label)}</button>`,
     )
     .join("")}</div></div>`;
 }
@@ -269,6 +320,7 @@ function render() {
   $("announcement").textContent =
     `${items.length} ${liveData ? "" : "sample "}classes shown.`;
   updateMapCounts();
+  renderMapSelection();
   syncURL();
 }
 function changed() {
@@ -334,6 +386,10 @@ function clearAll() {
   changed();
 }
 function setView(view) {
+  if (mobile.matches && view === "map") {
+    if (document.activeElement === $("search")) $("search").blur();
+    toggleSearch(false, false);
+  }
   state.view = view;
   document.body.dataset.view = view;
   $("show-list").setAttribute("aria-pressed", view === "list");
@@ -347,7 +403,10 @@ function setView(view) {
 function toggleSearch(open = $("search-panel").hidden, focus = true) {
   $("search-panel").hidden = !open;
   $("toggle-search").setAttribute("aria-expanded", open);
-  if (open && focus) $("search").focus();
+  if (open && focus) {
+    if (mobile.matches) setView("list");
+    $("search").focus();
+  }
 }
 function openLecture(id, fromRandom = false) {
   const l = all.find((item) => item.id === id);
@@ -357,6 +416,7 @@ function openLecture(id, fromRandom = false) {
   if (state.view === "map") focusBuilding(l.building);
   $("lecture-detail").innerHTML =
     `<header class="sheet-heading"><div><p class="eyebrow">${fromRandom ? "YOU HAVE BEEN SONDERATED" : "A POSSIBLE DETOUR"}</p><span class="detail-code">${esc(l.code)} · ${esc(l.section)}</span></div><button id="close-detail" class="icon-button" aria-label="Close class details">${icon("close")}</button></header><div class="sheet-body detail-body"><p class="hand-note">${fromRandom ? "didn’t see that one coming." : "a little outside your usual."}</p><h2 id="detail-title">${esc(l.title)}</h2><p class="detail-description">${esc(l.descFull || l.description)}</p><dl><div><dt>WHEN</dt><dd>${fullTime(l.start)} – ${fullTime(l.end)}<small>${DAYS[l.day - 1]} · ${esc(terms[l.term])}</small></dd></div><div><dt>WHERE</dt><dd>${esc(buildingName(l.building))}<small>${esc(roomName(l))}</small></dd></div><div><dt>THE WALK</dt><dd>${walkText(l)} from ${pinLabel()}<small>Distance estimate · allow extra time</small></dd></div><div><dt>THE ROOM</dt><dd>${l.seats === null ? "Capacity unknown" : `${l.seats.toLocaleString()} seats`}<small>Capacity, not attendance</small></dd></div></dl><p class="sample-note">${liveData ? "PUBLISHED MEETING" : "SAMPLE MEETING"} · ${DAYS[l.day - 1].toUpperCase()}</p></div><footer class="detail-actions"><button id="show-building" class="ink-button">${icon("map")} Show on map ${icon("arrow")}</button><button id="building-day" class="text-button">See this building’s day ↗</button><button id="share-class" class="text-button">Share class ↗</button><button id="sonderate-again" class="text-button">${icon("shuffle")} Sonderate again</button></footer>`;
+  syncDetailLayout();
   if (!$("lecture-detail").open) $("lecture-detail").showModal();
   else $("close-detail").focus();
   syncURL();
@@ -396,17 +456,26 @@ function populateLocations() {
       )
       .join("");
 }
-async function shareLink() {
+async function shareLink(source = "toolbar") {
   syncURL();
   try {
     await navigator.clipboard.writeText(location.href);
     $("announcement").textContent =
       "Link copied. It includes your filters and approximate pin position.";
-    const label = $("share-link");
-    label.textContent = "Link copied ✓";
+    const label = source === "class" ? $("share-class") : $("share-link");
+    const original = source === "class" ? "Share class ↗" : "Share link ↗";
+    label.textContent = "Copied ✓";
     setTimeout(() => {
-      if (!disposed) label.innerHTML = `Share link ${icon("diagonal")}`;
+      if (!disposed) {
+        label.innerHTML =
+          source === "class" ? original : `Share link ${icon("diagonal")}`;
+      }
     }, 2500);
+    if (source === "class") {
+      $("share-url").value = location.href;
+      $("share-dialog").showModal();
+      $("share-url").select();
+    }
   } catch {
     $("share-url").value = location.href;
     $("share-dialog").showModal();
@@ -424,6 +493,7 @@ function restore(hash) {
   if (state.building?.codes[0] && state.view === "map")
     focusBuilding(state.building.codes[0]);
   if (state.selected) openLecture(state.selected);
+  showSharedNotice();
 }
 async function refreshCatalogue() {
   if (loadingCatalogue) return;
@@ -550,6 +620,13 @@ listen($("search"), "input", (event) => {
   state.query = event.target.value.slice(0, 200);
   changed();
 });
+listen($("search"), "keydown", (event) => {
+  if (mobile.matches && event.key === "Enter") {
+    event.preventDefault();
+    $("search").blur();
+    $("results-title").focus({ preventScroll: true });
+  }
+});
 listen($("close-search"), "click", () => {
   state.query = "";
   $("search").value = "";
@@ -561,6 +638,17 @@ listen($("clear-all"), "click", clearAll);
 listen($("toggle-map"), "click", () =>
   setView(state.view === "map" ? "list" : "map"),
 );
+listen($("map-building-classes"), "click", () => {
+  if (!mapSelection || $("map-building-classes").disabled) return;
+  state.building = { codes: [...mapSelection.codes], name: mapSelection.name };
+  changed();
+  setView("list");
+  $("results-title").focus({ preventScroll: true });
+});
+listen($("dismiss-map-building"), "click", () => {
+  map?.clearSelection();
+  $("explore-map").querySelector("canvas")?.focus({ preventScroll: true });
+});
 listen($("show-list"), "click", () => setView("list"));
 listen($("show-map"), "click", () => setView("map"));
 listen($("preview-info"), "click", () => $("about-preview").showModal());
@@ -571,6 +659,10 @@ listen($("map-sources"), "click", async () => {
 });
 listen($("share-link"), "click", shareLink);
 listen($("close-share"), "click", () => $("share-dialog").close());
+listen($("close-shared-banner"), "click", () => {
+  clearTimeout(sharedNoticeTimer);
+  $("shared-banner").hidden = true;
+});
 listen($("open-location"), "click", () => {
   $("location-status").textContent = `Walking from ${pinLabel()}.`;
   $("location-dialog").showModal();
@@ -639,15 +731,17 @@ listen(document, "click", (event) => {
   const browse = event.target.closest("[data-browse]");
   if (browse) {
     state.query = browse.dataset.browse;
+    changed();
     $("search").value = state.query;
     toggleSearch(true);
-    changed();
+    $("search").focus({ preventScroll: true });
+    $("search").select();
   }
   const open = event.target.closest("[data-open]");
   if (open) openLecture(open.dataset.open);
   if (event.target.closest("#close-detail")) $("lecture-detail").close();
   if (event.target.closest("#sonderate-again")) sonderate();
-  if (event.target.closest("#share-class")) shareLink();
+  if (event.target.closest("#share-class")) shareLink("class");
   if (event.target.closest("#show-more")) {
     visibleLimit += 40;
     render();
@@ -686,6 +780,80 @@ listen(window, "hashchange", () => {
   userChanged = true;
   restore(location.hash);
 });
+// Reuse the same primary action so its state and event handler survive breakpoints.
+function syncMapControlLabels() {
+  for (const [id, small, full] of [
+    ["view-3d", "3D", "3D VIEW"],
+    ["view-2d", "Plan", "PLAN VIEW"],
+  ]) {
+    const button = $("explore-map").querySelector("#" + id);
+    if (!button) continue;
+    button.textContent = mobile.matches ? small : full;
+    button.setAttribute("aria-label", full);
+  }
+}
+function syncDetailLayout() {
+  const description = document.querySelector(".detail-description");
+  const facts = document.querySelector(".detail-body dl");
+  if (!description || !facts) return;
+  if (mobile.matches) description.before(facts);
+  else facts.before(description);
+}
+function syncMobileLayout() {
+  const action = $("sonderate");
+  const body = $("filters-dialog").querySelector(".sheet-body");
+  const subject = body.querySelector(".subject-field"),
+    gap = body.querySelector(".gap-field"),
+    time = body.querySelector(".time-field");
+  if (mobile.matches) {
+    document
+      .querySelector(".mobile-switch")
+      .insertBefore(action, $("show-map"));
+    body.prepend(gap);
+    body.insertBefore(subject, body.querySelector(".room-filter"));
+  } else {
+    document.querySelector(".main-actions").prepend(action);
+    body.prepend(subject);
+    body.insertBefore(gap, time);
+  }
+  syncDetailLayout();
+  syncMapControlLabels();
+  syncMobileViewport();
+}
+function syncMobileViewport() {
+  const viewport = window.visualViewport;
+  const height = viewport?.height || innerHeight;
+  const keyboardInset = Math.max(
+    0,
+    innerHeight - height - (viewport?.offsetTop || 0),
+  );
+  const editing = document.activeElement?.matches(
+    'input:not([type="range"]):not([type="checkbox"]), textarea',
+  );
+  document.body.classList.toggle(
+    "mobile-keyboard",
+    mobile.matches && !!editing && keyboardInset > 140,
+  );
+  document.documentElement.style.setProperty(
+    "--mobile-viewport-height",
+    `${height}px`,
+  );
+  document.documentElement.style.setProperty(
+    "--mobile-keyboard-inset",
+    `${mobile.matches && editing ? keyboardInset : 0}px`,
+  );
+}
+listen(mobile, "change", syncMobileLayout);
+if (window.visualViewport)
+  listen(window.visualViewport, "resize", syncMobileViewport);
+listen(window, "resize", syncMobileViewport);
+listen(document, "focusin", syncMobileViewport);
+listen(document, "focusout", () =>
+  requestAnimationFrame(() => {
+    if (!disposed) syncMobileViewport();
+  }),
+);
+syncMobileLayout();
 window.sonderPreview = {
   get map() {
     return map;

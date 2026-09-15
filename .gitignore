@@ -65,3 +65,7 @@ Thumbs.db
 # (scripts/site.sh strips alts/ from the build anyway) and not committed --
 # the chosen page is landing/index.html.
 landing/alts/
+
+# Demo capture output (videos, screenshots) — regenerable, not source
+preview/artifacts/
+preview/preview/

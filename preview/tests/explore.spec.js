@@ -385,3 +385,22 @@ test("Sonderate stays reachable, rerolls, and share fallback preserves the class
   await expect(page.locator("#share-dialog")).toBeVisible();
   await expect(page.locator("#share-url")).toHaveValue(page.url());
 });
+
+test("toolbar and class share controls give visible clipboard feedback", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: async (value) => (window.__sharedUrl = value) },
+    }),
+  );
+  await open(page);
+  await page.locator("#share-link").click();
+  await expect(page.locator("#share-link")).toHaveText(/Link copied/);
+  expect(await page.evaluate(() => window.__sharedUrl)).toBe(page.url());
+  await page.locator(".lecture-open").first().click();
+  await page.locator("#share-class").click();
+  await expect(page.locator("#share-class")).toHaveText("Copied ✓");
+  await expect(page.locator("#share-dialog")).toBeVisible();
+  expect(await page.evaluate(() => window.__sharedUrl)).toBe(page.url());
+});

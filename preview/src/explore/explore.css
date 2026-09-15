@@ -2000,6 +2000,48 @@ body[data-view="map"] .mobile-walk-label {
   width: 13px;
   height: 13px;
 }
+.shared-banner {
+  position: fixed;
+  z-index: 40;
+  top: 78px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: min(520px, calc(100vw - 32px));
+  padding: 13px 14px 13px 18px;
+  color: #fff;
+  background: var(--blue);
+  border: 1px solid #12376d;
+  box-shadow: 5px 5px 0 rgba(20, 20, 15, 0.16);
+  transform: translateX(-50%);
+  animation: shared-banner-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.shared-banner > span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.shared-banner strong {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.shared-banner small {
+  overflow: hidden;
+  color: #d7e5fa;
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.shared-banner .icon-button {
+  margin-left: auto;
+  color: #fff;
+}
+@keyframes shared-banner-in {
+  from { opacity: 0; transform: translate(-50%, -12px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
 .page-title > p {
   flex-wrap: wrap;
 }
@@ -2249,5 +2291,476 @@ body[data-view="map"] .mobile-walk-label {
   .ticket-place small {
     white-space: normal;
     text-align: right;
+  }
+}
+
+/* Mobile: select and arrive first; the building-name button opens its classes. */
+.map-building-preview {
+  display: none;
+}
+@media (max-width: 760px) {
+  .map-building-preview:not([hidden]) {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0 0 12px;
+    padding: 8px;
+    border: 1px solid var(--blue);
+    background: var(--card);
+  }
+  .map-building-classes {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+    min-height: 64px;
+    padding: 6px;
+    text-align: left;
+    color: var(--blue);
+  }
+  .map-building-copy {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+  .map-building-copy .eyebrow {
+    margin: 0;
+    font-size: 8px;
+    letter-spacing: 0.5px;
+  }
+  #map-building-name {
+    font: 14px/1.3 var(--fat);
+    overflow-wrap: anywhere;
+  }
+  #map-building-count {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+  .map-building-classes:hover:not(:disabled) #map-building-name,
+  .map-building-classes:focus-visible #map-building-name {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .map-building-classes:disabled {
+    cursor: default;
+    color: var(--dim);
+  }
+  .map-building-classes:disabled > .icon {
+    display: none;
+  }
+  #dismiss-map-building {
+    margin: 0;
+    width: 44px;
+    height: 44px;
+    border: 0;
+  }
+}
+
+/* Phone ergonomics: reachable primary action, readable facts, and more map space. */
+.mobile-map-hint {
+  display: none;
+}
+.page-title > p > .campus-context {
+  color: var(--dim);
+}
+@media (max-width: 760px) {
+  .app-shell {
+    height: calc(
+      var(--mobile-viewport-height, 100dvh) - 76px - env(safe-area-inset-bottom)
+    );
+    min-height: 0;
+    padding: 0 14px;
+  }
+  .masthead {
+    height: 52px;
+    min-height: 52px;
+  }
+  .masthead-note {
+    display: none;
+  }
+  .preview-stamp {
+    min-height: 44px;
+    font-size: 8px;
+    padding: 9px;
+    border: 0;
+  }
+  .workspace-top {
+    padding: 12px 0 8px;
+  }
+  .page-title h1 {
+    font-size: 23px;
+    margin: 0 0 2px;
+  }
+  .page-title > p {
+    gap: 7px;
+    justify-content: space-between;
+  }
+  .page-title .campus-context {
+    display: none;
+  }
+  .page-title > p > #change-time {
+    min-height: 44px;
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+  .demo-label {
+    display: inline;
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+  .main-actions {
+    margin-top: 6px;
+    gap: 8px;
+  }
+  .search-toggle {
+    justify-content: flex-start;
+    font-size: 13px;
+    padding: 0 14px;
+    background: var(--card);
+  }
+  .utility-button {
+    min-height: 48px;
+  }
+  #open-filters {
+    width: auto;
+    min-width: 92px;
+    padding: 0 12px;
+    gap: 8px;
+    font-size: 12px;
+  }
+  #open-filters > .filter-label {
+    display: inline;
+  }
+  #filter-count {
+    top: -5px;
+    right: -3px;
+  }
+  .context-bar {
+    margin: 0 0 8px;
+    gap: 8px;
+  }
+  .context-bar button {
+    font-size: 10px;
+    min-height: 44px;
+  }
+  .context-bar .icon {
+    width: 13px;
+    height: 13px;
+  }
+  .pane-heading {
+    padding-bottom: 10px;
+    min-height: 28px;
+  }
+  .pane-heading h2 {
+    font-size: 10px;
+  }
+  .list-heading-actions > span {
+    font-size: 10px;
+  }
+  .active-summary {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+  .active-summary button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .mobile-switch {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(120px, 1.35fr) minmax(0, 1fr);
+    align-items: center;
+    height: calc(76px + env(safe-area-inset-bottom));
+    gap: 6px;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+  }
+  .mobile-switch button {
+    min-width: 0;
+    min-height: 48px;
+    font-size: 12px;
+    gap: 6px;
+    padding: 0 6px;
+  }
+  .mobile-switch .icon {
+    width: 16px;
+    height: 16px;
+  }
+  #mobile-count {
+    display: none;
+  }
+  .mobile-switch .sonderate {
+    margin: 0;
+    background: var(--red);
+    color: var(--ink);
+    font-size: 11px;
+    gap: 7px;
+    box-shadow: 2px 3px 0 var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .mobile-switch .sonderate .icon:last-child {
+    display: none;
+  }
+  .ticket-description {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .ticket-time,
+  .ticket-place {
+    font-size: 12px;
+  }
+  .ticket-walk {
+    font-size: 12px;
+  }
+  .ticket-walk small {
+    font-size: 10px;
+  }
+  .ticket-place > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .ticket-place small {
+    font-size: 11px;
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    padding: 3px 6px;
+    white-space: nowrap;
+  }
+  body[data-view="map"] .page-title h1 {
+    display: none;
+  }
+  body[data-view="map"] .workspace-top {
+    padding-top: 3px;
+  }
+  .map-heading .map-hand-note {
+    display: none;
+  }
+  .map-heading .mobile-map-hint {
+    display: inline;
+    font: 10px/1.5 var(--mono);
+    letter-spacing: 0;
+    color: var(--dim);
+  }
+  .map-frame {
+    margin-bottom: 8px;
+  }
+  .map-origin {
+    display: none;
+  }
+  .map-building-preview:not([hidden]) {
+    margin-bottom: 8px;
+  }
+  #map-building-count {
+    font-size: 12px;
+  }
+  .embedded-map.campus-map .view-controls {
+    padding: 4px;
+    gap: 0;
+  }
+  .embedded-map.campus-map .view-switch {
+    display: contents;
+  }
+  .embedded-map.campus-map .view-controls .control-rule {
+    display: none;
+  }
+  .embedded-map.campus-map .view-switch button,
+  .embedded-map.campus-map .square-control {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+  }
+  .embedded-map.campus-map .map-label {
+    min-height: 36px;
+    min-width: 44px;
+    font-size: 10px;
+    padding: 7px;
+  }
+  .embedded-map.campus-map .label-code {
+    font-size: 9px;
+  }
+  #map-sources {
+    min-height: 44px;
+    min-width: 60px;
+    font-size: 9px;
+  }
+  .map-bottom {
+    bottom: 0;
+  }
+  .search-panel {
+    margin: 4px 0 0;
+    min-height: 52px;
+  }
+  .search-panel input {
+    font-size: 16px;
+  }
+  #close-search {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .sheet {
+    max-height: calc(var(--mobile-viewport-height, 100dvh) - 16px);
+    bottom: var(--mobile-keyboard-inset, 0px);
+  }
+  .sheet-heading {
+    padding: 18px;
+  }
+  .sheet-heading h2 {
+    font-size: 23px;
+  }
+  .sheet-body {
+    padding: 20px 18px;
+  }
+  .sheet input:not([type="range"]):not([type="checkbox"]),
+  .sheet select {
+    font-size: 16px;
+    min-height: 48px;
+  }
+  .sheet .icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .filters-sheet .sheet-body {
+    display: flex;
+    flex-direction: column;
+  }
+  .filters-sheet .gap-field {
+    order: 0;
+    margin-top: 0;
+  }
+  .filters-sheet .filter-grid {
+    order: 1;
+  }
+  .filters-sheet .time-field {
+    order: 2;
+  }
+  .filters-sheet .subject-field {
+    order: 3;
+    margin-top: 24px;
+  }
+  .filters-sheet .room-filter {
+    order: 4;
+  }
+  .filters-sheet .sheet-body > .filter-note {
+    order: 5;
+  }
+  .filter-note {
+    font-size: 11px;
+    line-height: 1.7;
+  }
+  .sheet-actions {
+    padding: 12px 18px;
+  }
+  .sheet-actions button {
+    min-height: 48px;
+  }
+  .detail-body {
+    display: flex;
+    flex-direction: column;
+  }
+  .detail-body .hand-note {
+    display: none;
+  }
+  .detail-body h2 {
+    order: 0;
+    font-size: 25px;
+    margin: 0;
+  }
+  .detail-body dl {
+    order: 1;
+    margin: 12px 0 18px;
+  }
+  .detail-body dd {
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+  .detail-body dd small {
+    font-size: 11px;
+  }
+  .detail-description {
+    order: 2;
+    font-size: 13px;
+    margin: 0;
+  }
+  .detail-body .sample-note {
+    order: 3;
+  }
+  .detail-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    padding: 10px 18px;
+    gap: 6px;
+  }
+  .detail-actions > .ink-button,
+  .detail-actions > #sonderate-again {
+    grid-column: auto;
+  }
+  .detail-actions > .text-button,
+  .detail-actions > .ink-button {
+    font-size: 11px;
+    min-height: 48px;
+    padding: 6px;
+  }
+  .detail-actions > .ink-button > .icon:last-child {
+    display: none;
+  }
+  .mobile-keyboard .mobile-switch {
+    display: none;
+  }
+  .mobile-keyboard .app-shell {
+    height: var(--mobile-viewport-height, 100dvh);
+  }
+  .mobile-keyboard .page-title,
+  .mobile-keyboard .main-actions,
+  .mobile-keyboard .context-bar {
+    display: none;
+  }
+  .mobile-keyboard .workspace-top {
+    padding: 0;
+  }
+}
+@media (max-width: 360px) {
+  .mobile-switch {
+    grid-template-columns: minmax(0, 1fr) 120px minmax(0, 1fr);
+  }
+  .mobile-switch button {
+    font-size: 11px;
+    gap: 4px;
+  }
+  .ticket-time,
+  .ticket-walk {
+    font-size: 10px;
+  }
+  .ticket-place {
+    font-size: 11px;
+  }
+  .ticket-place small {
+    font-size: 10px;
+  }
+  .page-title > p > #change-time {
+    font-size: 10px;
+  }
+  .demo-label {
+    font-size: 8px;
+  }
+}
+@media (max-width: 760px) {
+  .embedded-map.campus-map .view-switch button {
+    font-size: 11px;
+  }
+}
+@media (max-width: 360px) {
+  .gap-values {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+  .gap-values > span {
+    display: none;
+  }
+  .gap-values input {
+    padding-left: 5px;
+    padding-right: 5px;
   }
 }
