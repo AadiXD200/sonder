@@ -1,6 +1,6 @@
 # Sonder
 
-**[sonderate.me](https://sonderate.me)** · **[Demo video](https://youtu.be/ttVOj9_ygrw)**
+**[sonderate.me](https://sonderate.me)** · **[Demo video](https://youtu.be/ttVOj9_ygrw)** · **[r/UofT thread](https://www.reddit.com/r/UofT/comments/1wh8r66/does_anyone_else_enjoy_walking_into_random_uoft/)**
 
 Hundreds of lectures are happening on the UofT St. George campus right now.
 Sonder shows you the ones you could walk into.
@@ -114,3 +114,7 @@ midterm in it are not what this is for.
 ---
 
 Built by a UofT student, for UofT students. Free, and staying that way.
+
+It launched on r/UofT here: [does anyone else enjoy walking into random UofT
+lectures?](https://www.reddit.com/r/UofT/comments/1wh8r66/does_anyone_else_enjoy_walking_into_random_uoft/) — that thread is the best place to tell me what's broken or
+what's missing.
