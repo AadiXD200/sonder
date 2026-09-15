@@ -32,6 +32,36 @@ rm -f site/app/data/campus.bin
 # would work once and then disappear on the next deploy.
 echo "sonderate.me" > site/CNAME
 
+# The analytics tag. Injected here rather than into landing/index.html or the
+# app's source because it has to land in both pages, and preview/src is Astra's
+# -- a build-time injection survives his rebuilds and keeps one copy of the
+# snippet. Set SONDER_GC_SITE to your GoatCounter subdomain to enable it;
+# unset, the site ships with no tracking at all, which is the right default
+# for local builds and previews.
+if [ -n "${SONDER_GC_SITE:-}" ]; then
+  echo "==> analytics ($SONDER_GC_SITE)"
+  TAG='<script data-goatcounter="https://'"$SONDER_GC_SITE"'.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>'
+  for f in site/index.html site/app/explore.html; do
+    [ -f "$f" ] || continue
+    # Insert before </head>. python rather than sed: the tag contains slashes
+    # and ampersands that sed's replacement syntax would mangle.
+    TAG="$TAG" python3 - "$f" <<'INJECT'
+import os, sys
+path = sys.argv[1]
+tag = os.environ["TAG"]
+html = open(path, encoding="utf-8").read()
+if "goatcounter" in html:
+    sys.exit(0)
+if "</head>" not in html:
+    sys.exit(f"error: {path} has no </head> to inject into")
+open(path, "w", encoding="utf-8").write(html.replace("</head>", tag + "\n</head>", 1))
+INJECT
+    echo "    tagged $f"
+  done
+else
+  echo "==> analytics: SONDER_GC_SITE unset, shipping untracked"
+fi
+
 echo "==> done"
 du -sh site site/app
 find site -name '*.json' -size +1M -exec ls -lh {} \; | awk '{print "  large:", $9, $5}'

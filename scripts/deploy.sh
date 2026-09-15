@@ -22,6 +22,12 @@ if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
 fi
 
 if [ "${1:-}" != "--skip-build" ]; then
+  # Warn rather than fail: an untracked deploy is a valid thing to want, but
+  # doing it by accident on launch day is not recoverable -- those visits are
+  # simply never counted.
+  if [ -z "${SONDER_GC_SITE:-}" ]; then
+    echo "warning: SONDER_GC_SITE unset, publishing with no analytics" >&2
+  fi
   ./scripts/site.sh
 fi
 
