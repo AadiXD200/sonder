@@ -52,9 +52,7 @@ const gap = {
 };
 
 test("real Wednesday 10:00 gap has reachable Sonderate choices through 11:00", () => {
-  const oldPool = findMeetings(catalogue.meetings, gap, buildings, index, {
-    dayView: false,
-  }).filter(
+  const oldPool = findMeetings(catalogue.meetings, gap, buildings, index).filter(
     (m) =>
       m.start <= gap.gapStart + 20 &&
       m.start >= gap.gapStart + walkMinutes(gap.pin, buildings[m.building]),
@@ -68,11 +66,11 @@ test("real Wednesday 10:00 gap has reachable Sonderate choices through 11:00", (
       gap.gapStart + walkMinutes(gap.pin, buildings[m.building]),
     );
     expect(m.start).toBeLessThanOrEqual(660);
-    expect(m.end).toBeLessThanOrEqual(720);
+    // Starting soon does not impose a finish deadline.
     expect(m.day).toBe(3);
     expect(m.term).toBe("F");
   }
-  const restricted = { ...gap, gapEnd: 630 };
+  const restricted = { ...gap, timeMode: "custom", finishBy: true, gapEnd: 630 };
   expect(
     sonderateCandidates(catalogue.meetings, restricted, buildings, index).every(
       (m) => m.end <= 630,

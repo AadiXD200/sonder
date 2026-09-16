@@ -33,7 +33,7 @@ test("directory codes select grouped source geometry and close preserves view", 
   );
   const identities = await page.evaluate(() => window.campusMap.getBuildings());
   expect(identities.filter((b) => b.codes.includes("SM"))).toHaveLength(1);
-  await page.getByRole("button", { name: "PLAN VIEW", exact: true }).click();
+  await page.evaluate(() => window.campusMap.setView("plan"));
   await page.waitForTimeout(800);
   await page.getByRole("button", { name: "Close building details" }).click();
   expect(await page.evaluate(() => window.campusMap.stats.planView)).toBe(true);

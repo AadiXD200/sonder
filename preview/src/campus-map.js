@@ -20,6 +20,26 @@ export function mountCampusMap(root, options = {}) {
   root.classList.add("campus-map");
   root.innerHTML = shell;
   const $ = (id) => root.querySelector("#" + id);
+  if (options.embedded) {
+    const sourceButton = $("source-button");
+    sourceButton.className = "square-control map-info-control";
+    sourceButton.textContent = "↗";
+    sourceButton.setAttribute("aria-label", "Map information and sources");
+    sourceButton.setAttribute("aria-haspopup", "dialog");
+    sourceButton.title = "Map information and sources";
+    $("labels-toggle").after(sourceButton);
+    const controlsPanel = root.querySelector('.view-controls');
+    controlsPanel.id = 'map-tools';
+    const toolsToggle = document.createElement('button');
+    toolsToggle.id = 'map-tools-toggle';
+    toolsToggle.className = 'map-tools-toggle';
+    toolsToggle.type = 'button';
+    toolsToggle.innerHTML = '<span aria-hidden="true">⋯</span><span>Map tools</span>';
+    toolsToggle.setAttribute('aria-expanded', 'false');
+    toolsToggle.setAttribute('aria-controls', 'map-tools');
+    root.classList.remove('map-tools-open');
+    root.append(toolsToggle);
+  }
   let locationPin = options.location ? { ...options.location } : null,
     pinButton = null;
   let catalogue = options.catalogue || {},
@@ -101,7 +121,7 @@ export function mountCampusMap(root, options = {}) {
   let framePending = false,
     isRendering = false,
     renderCount = 0,
-    showLabels = true,
+    showLabels = options.initialLabels !== false,
     planView = false,
     lastPointer = null;
   let pointerMoved = false,
@@ -121,6 +141,23 @@ export function mountCampusMap(root, options = {}) {
   function listenScene(target, type, callback) {
     target.addEventListener(type, callback);
     cleanups.push(() => target.removeEventListener(type, callback));
+  }
+  $("labels-toggle").classList.toggle('active', showLabels);
+  $("labels-toggle").setAttribute('aria-pressed', String(showLabels));
+  if (options.embedded) {
+    const toggle = $('map-tools-toggle');
+    const setToolsOpen = open => {
+      root.classList.toggle('map-tools-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    };
+    listen(toggle, 'click', () => setToolsOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    listen($('scene'), 'pointerdown', () => setToolsOpen(false));
+    listen(root, 'keydown', event => {
+      if (event.key === 'Escape' && !root.querySelector('dialog[open]') && toggle.getAttribute('aria-expanded') === 'true') {
+        setToolsOpen(false);
+        toggle.focus({ preventScroll: true });
+      }
+    });
   }
   function publicBuilding(b) {
     return b
@@ -149,12 +186,21 @@ export function mountCampusMap(root, options = {}) {
     labels = [];
   const raycaster = new THREE.Raycaster(),
     pointer = new THREE.Vector2();
-  const homeTarget = new THREE.Vector3(20, 0, -185),
-    homeOffset = new THREE.Vector3(440, 920, 1020);
+  // Centre of King's College Circle (OpenStreetMap way 4212296).
+  const circleCentre = toMapPoint({ lat: 43.66174, lng: -79.39518 });
+  const homeTarget = options.embedded
+      ? new THREE.Vector3(circleCentre.x, 0, circleCentre.z)
+      : new THREE.Vector3(20, 0, -185),
+    homeOffset = options.mobileFraming
+      ? new THREE.Vector3(1180, 620, 550)
+      : options.embedded
+        ? new THREE.Vector3(1280, 720, 200)
+        : new THREE.Vector3(440, 920, 1020),
+    homeZoom = options.mobileFraming ? 2.6 : options.embedded ? 2.4 : 1.35;
   const colors = {
     white: new THREE.Color("#fcfdff"),
-    side: new THREE.Color("#d9e7f8"),
-    edge: new THREE.Color("#7095c2"),
+    side: new THREE.Color("#bdd1eb"),
+    edge: new THREE.Color("#6487b1"),
     landmarkEdge: new THREE.Color("#164f97"),
     selected: new THREE.Color("#c4ddff"),
     selectedEdge: new THREE.Color("#0758cc"),
@@ -241,13 +287,7 @@ export function mountCampusMap(root, options = {}) {
   function setView(plan) {
     if (status !== "ready") return;
     planView = plan;
-    $("view-3d").classList.toggle("active", !plan);
-    $("view-2d").classList.toggle("active", plan);
-    $("view-3d").setAttribute("aria-pressed", !plan);
-    $("view-2d").setAttribute("aria-pressed", plan);
     controls.enableRotate = !plan;
-    controls.mouseButtons.LEFT = plan ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE;
-    controls.touches.ONE = plan ? THREE.TOUCH.PAN : THREE.TOUCH.ROTATE;
     flyTo(
       controls.target,
       camera.zoom,
@@ -271,14 +311,8 @@ export function mountCampusMap(root, options = {}) {
     clearSelection();
     planView = false;
     controls.enableRotate = true;
-    controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
-    controls.touches.ONE = THREE.TOUCH.ROTATE;
-    $("view-3d").classList.add("active");
-    $("view-2d").classList.remove("active");
-    $("view-3d").setAttribute("aria-pressed", "true");
-    $("view-2d").setAttribute("aria-pressed", "false");
     paintBuildings();
-    flyTo(homeTarget, 1, homeOffset);
+    flyTo(homeTarget, homeZoom, homeOffset);
   }
   function select(b, requestedCode) {
     if (!b || status !== "ready") return;
@@ -419,7 +453,7 @@ export function mountCampusMap(root, options = {}) {
           const ny = Math.abs(normals.getY(i));
           const shade = Math.max(
             0,
-            Math.min(0.6, (1 - ny) * 0.37 + Math.abs(normals.getX(i)) * 0.08),
+            Math.min(0.7, (1 - ny) * 0.48 + Math.abs(normals.getX(i)) * 0.12),
           );
           c.copy(colors.white).lerp(
             emphasized ? colors.selected : colors.side,
@@ -665,7 +699,7 @@ export function mountCampusMap(root, options = {}) {
           size: 1,
           sizeAttenuation: false,
           transparent: true,
-          opacity: 0.26,
+          opacity: 0.14,
         }),
       ),
     );
@@ -987,11 +1021,16 @@ export function mountCampusMap(root, options = {}) {
     renderer.domElement.tabIndex = 0;
     renderer.domElement.setAttribute(
       "aria-label",
-      "St. George campus model. Drag to orbit, right-drag to pan, pinch or scroll to zoom. Arrow keys pan, plus and minus zoom, Home resets. Choose a building from the selector or labels.",
+      "St. George campus model. Drag to rotate. When a building is selected, drag a little to look around it or swipe farther to return to campus. Use two fingers to turn or tilt, pinch or scroll to zoom. Arrow keys rotate, plus and minus zoom, Home resets. Choose a building from the selector or labels.",
     );
     scene = new THREE.Scene();
     camera = new THREE.OrthographicCamera(-900, 900, 745, -745, 1, 4500);
+    camera.zoom = homeZoom;
     controls = new OrbitControls(camera, renderer.domElement);
+    controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
+    controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+    controls.touches.ONE = THREE.TOUCH.ROTATE;
+    controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
     controls.target.copy(homeTarget);
     camera.position.copy(homeTarget).add(homeOffset);
     controls.enableDamping = !reducedMotion.matches;
@@ -1001,7 +1040,9 @@ export function mountCampusMap(root, options = {}) {
     controls.maxPolarAngle = Math.PI / 2.5;
     controls.minZoom = 0.7;
     controls.maxZoom = 7;
+    controls.zoomToCursor = false;
     controls.screenSpacePanning = false;
+    controls.enablePan = false;
     controls.maxTargetRadius = 1300;
     controls.cursor.copy(homeTarget);
     controls.update();
@@ -1017,20 +1058,66 @@ export function mountCampusMap(root, options = {}) {
     setupLocation();
     const canvas = renderer.domElement;
     let pendingTouchTap = null;
+    let buildingDrag = null,
+      returnToCampus = false;
+    const touchPositions = new Map();
+    const touchAngle = () => {
+      if (touchPositions.size !== 2) return null;
+      const [a, b] = [...touchPositions.values()];
+      return Math.atan2(b.y - a.y, b.x - a.x);
+    };
+    const finishBuildingDrag = () => {
+      if (activePointers.size) return;
+      buildingDrag = null;
+      if (!returnToCampus) return;
+      returnToCampus = false;
+      // Finish the gesture before easing out, so animation never fights the finger.
+      flyTo(homeTarget, homeZoom, camera.position.clone().sub(controls.target));
+    };
     listenScene(canvas, "pointerdown", (e) => {
       pendingTouchTap = null;
       activePointers.add(e.pointerId);
+      if (e.pointerType === "touch")
+        touchPositions.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (activePointers.size === 1) {
         lastPointer = { id: e.pointerId, x: e.clientX, y: e.clientY };
         pointerMoved = false;
-      } else pointerMoved = true;
+        buildingDrag = selected ? { ...lastPointer } : null;
+        returnToCampus = false;
+      } else {
+        pointerMoved = true;
+        buildingDrag = null;
+      }
     });
     listenScene(canvas, "pointermove", (e) => {
+      if (touchPositions.has(e.pointerId)) {
+        const before = touchAngle();
+        touchPositions.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        const after = touchAngle();
+        if (before !== null && after !== null && controls.enableRotate) {
+          const delta = Math.atan2(
+            Math.sin(after - before), Math.cos(after - before),
+          );
+          if (Math.abs(delta) > 0.001) controls.rotateLeft(-delta);
+        }
+      }
       if (
+        activePointers.has(e.pointerId) &&
         lastPointer &&
         Math.hypot(e.clientX - lastPointer.x, e.clientY - lastPointer.y) > 6
-      )
+      ) {
         pointerMoved = true;
+      }
+      if (
+        selected &&
+        buildingDrag?.id === e.pointerId &&
+        Math.hypot(e.clientX - buildingDrag.x, e.clientY - buildingDrag.y) >
+          Math.max(70, Math.min(110, canvas.clientWidth * 0.2))
+      ) {
+        clearSelection();
+        buildingDrag = null;
+        returnToCampus = true;
+      }
       if (
         e.pointerType !== "mouse" ||
         e.buttons ||
@@ -1065,6 +1152,7 @@ export function mountCampusMap(root, options = {}) {
         !pointerMoved &&
         e.button === 0;
       activePointers.delete(e.pointerId);
+      touchPositions.delete(e.pointerId);
       if (tapped) {
         const building = hitTest(e.clientX, e.clientY);
         // Complete touch selection on click, after the browser fixes its target.
@@ -1074,6 +1162,7 @@ export function mountCampusMap(root, options = {}) {
         else select(building);
       }
       if (!activePointers.size) lastPointer = null;
+      finishBuildingDrag();
     });
     listenScene(canvas, "click", () => {
       if (!pendingTouchTap) return;
@@ -1084,8 +1173,10 @@ export function mountCampusMap(root, options = {}) {
     const cancelPointer = (e) => {
       if (e.type === "pointercancel") pendingTouchTap = null;
       activePointers.delete(e.pointerId);
+      touchPositions.delete(e.pointerId);
       pointerMoved = true;
       if (!activePointers.size) lastPointer = null;
+      finishBuildingDrag();
     };
     listenScene(canvas, "pointercancel", cancelPointer);
     listenScene(canvas, "lostpointercapture", cancelPointer);
@@ -1102,12 +1193,10 @@ export function mountCampusMap(root, options = {}) {
       if (status !== "ready") return;
       if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
         e.preventDefault();
-        const delta = new THREE.Vector3(
-          e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0,
-          0,
-          e.key === "ArrowUp" ? -1 : e.key === "ArrowDown" ? 1 : 0,
-        ).multiplyScalar(65 / camera.zoom);
-        flyTo(controls.target.clone().add(delta), camera.zoom);
+        tween = null;
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight")
+          controls.rotateLeft(e.key === "ArrowLeft" ? 0.15 : -0.15);
+        else controls.rotateUp(e.key === "ArrowUp" ? 0.1 : -0.1);
       } else if (e.key === "+" || e.key === "=") {
         e.preventDefault();
         zoom(1.4);
@@ -1165,9 +1254,16 @@ export function mountCampusMap(root, options = {}) {
         $("sources").close();
     }
   });
-  $("view-3d").onclick = () => setView(false);
-  $("view-2d").onclick = () => setView(true);
   $("reset-view").onclick = reset;
+  $("face-north").onclick = () => {
+    if (status !== "ready") return;
+    const offset = camera.position.clone().sub(controls.target);
+    flyTo(
+      controls.target,
+      camera.zoom,
+      new THREE.Vector3(0, offset.y, Math.hypot(offset.x, offset.z)),
+    );
+  };
   $("zoom-in").onclick = () => zoom(1.4);
   $("zoom-out").onclick = () => zoom(1 / 1.4);
   $("labels-toggle").onclick = () => {
@@ -1299,10 +1395,6 @@ export function mountCampusMap(root, options = {}) {
       setup(meta, new Float32Array(binary), data);
       status = "ready";
       $("building-picker").disabled = false;
-      $("view-3d").classList.add("active");
-      $("view-2d").classList.remove("active");
-      $("view-3d").setAttribute("aria-pressed", "true");
-      $("view-2d").setAttribute("aria-pressed", "false");
       invalidate();
       document.fonts.ready.then(() => {
         if (!disposed && sequence === loadSequence) invalidate();

@@ -36,16 +36,12 @@
   </div>
   <h2 id="selection-name"></h2>
   <p id="selection-note">City of Toronto · 2025 building model</p>
+  <p class="building-gesture-hint">Drag a little to look around. Swipe farther to return to campus.</p>
   <a id="official-link" target="_blank" rel="noreferrer"
     >View on UofT map <span>↗</span></a
   >
 </aside>
 <nav class="view-controls" aria-label="Map view">
-  <div class="view-switch">
-    <button id="view-3d" class="active" aria-pressed="true">3D VIEW</button
-    ><button id="view-2d" aria-pressed="false">PLAN VIEW</button>
-  </div>
-  <div class="control-rule"></div>
   <button id="zoom-in" class="square-control" aria-label="Zoom in">+</button>
   <button id="zoom-out" class="square-control" aria-label="Zoom out">−</button>
   <div class="control-rule"></div>
@@ -69,12 +65,12 @@
     Aa
   </button>
 </nav>
-<div class="compass" aria-hidden="true">
+<button class="compass" id="face-north" aria-label="Face north" title="Face north without changing your location or zoom">
   <span>N</span
   ><svg id="compass-arrow" viewBox="0 0 36 36">
     <path d="m18 4 6 25-6-5-6 5Z" />
   </svg>
-</div>
+</button>
 <div class="map-scale" aria-label="Map scale">
   <span id="scale-text">100 m</span><i id="scale-line"></i>
 </div>
@@ -82,7 +78,7 @@
   <span class="instruction-cross">+</span
   ><span>Go on. Change your perspective.</span
   ><small
-    >Drag to orbit <b>·</b> Right-drag to pan <b>·</b> Scroll to zoom</small
+    >Drag to rotate <b>·</b> Two fingers to turn and tilt <b>·</b> Pinch or scroll to zoom</small
   >
 </div>
 <footer>
@@ -131,10 +127,10 @@
     <div>
       <h3>Streets, paths & landscape</h3>
       <a
-        href="https://www.openstreetmap.org/#map=16/43.6635/-79.3965"
+        href="https://www.openstreetmap.org/copyright"
         target="_blank"
         rel="noreferrer"
-        >OpenStreetMap · September 2026 ↗</a
+        >© OpenStreetMap · September 2026 ↗</a
       >
       <p>
         Mapped paths, planted areas, and tree locations. Tree canopy sizes and

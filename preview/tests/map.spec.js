@@ -1,5 +1,29 @@
 import { test, expect } from "@playwright/test";
 
+test("dragging orbits in 3D and the compass restores north without changing zoom", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForFunction(() => window.campusMap?.stats.isIdle);
+  await page.locator("#labels-toggle").click();
+  const direction = () => page.evaluate(() => {
+    const a = window.campusMap.project("BA"), b = window.campusMap.project("RL");
+    return { x: b.x - a.x, y: b.y - a.y };
+  });
+  const before = await direction();
+  await page.mouse.move(700, 450);
+  await page.mouse.down();
+  await page.mouse.move(820, 500, { steps: 10 });
+  await page.mouse.up();
+  await page.waitForFunction(() => window.campusMap.stats.isIdle);
+  const rotated = await direction();
+  expect(Math.hypot(rotated.x - before.x, rotated.y - before.y)).toBeGreaterThan(10);
+  await page.locator("#face-north").click();
+  await page.waitForFunction(() => window.campusMap.stats.isIdle);
+  const transform = await page.locator("#compass-arrow").evaluate(el => el.style.transform);
+  expect(Math.abs(parseFloat(transform.match(/rotate\(([^d]+)/)[1]))).toBeLessThan(0.1);
+  expect(await page.evaluate(() => window.campusMap.stats.planView)).toBe(false);
+  await expect(page.locator("#navigate-move, #navigate-rotate, #view-2d")).toHaveCount(0);
+});
+
 test("campus loads, selects sourced buildings, changes view, and stops rendering at rest", async ({
   page,
 }) => {
@@ -36,10 +60,9 @@ test("campus loads, selects sourced buildings, changes view, and stops rendering
   await page.keyboard.press("Escape");
   await expect(page.locator("#selection")).toBeHidden();
   await page.waitForFunction(() => window.campusMap.stats.isIdle);
-  await page.getByRole("button", { name: "PLAN VIEW", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "PLAN VIEW", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
+  await page.evaluate(() => window.campusMap.setView("plan"));
+  expect(await page.evaluate(() => window.campusMap.stats.planView)).toBe(true);
+  await expect(page.locator("#view-2d, #view-3d")).toHaveCount(0);
   await page.waitForFunction(() => window.campusMap.stats.isIdle);
   const rest = await page.evaluate(() => window.campusMap.stats.renderCount);
   await page.waitForTimeout(300);
@@ -126,7 +149,7 @@ test("reduced motion completes camera changes without a running animation", asyn
       window.campusMap?.status === "ready" &&
       window.campusMap.stats.renderCount > 0,
   );
-  await page.getByRole("button", { name: "PLAN VIEW", exact: true }).click();
+  await page.evaluate(() => window.campusMap.setView("plan"));
   await page.waitForTimeout(100);
   const frames = await page.evaluate(() => window.campusMap.stats.renderCount);
   await page.waitForTimeout(200);

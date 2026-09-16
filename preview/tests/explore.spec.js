@@ -1,3 +1,4 @@
+import { expandFilters } from "./filter-helpers.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 const fixtureMeetings = JSON.parse(
@@ -34,12 +35,12 @@ test.beforeEach(async ({ page }) => {
     r.fulfill({ status: 404, body: "Not published" }),
   );
 });
-async function open(page, state) {
+async function open(page, state = initialState()) {
   await page.goto("/explore.html" + (state ? encodeState(state) : ""));
   await expect(page.locator(".class-ticket").first()).toBeVisible();
 }
 test("topic resolution, ranking, gap boundaries, term/day and unknown capacities", () => {
-  const state = { ...initialState(), gapStart: 640, gapEnd: 960 };
+  const state = { ...initialState(), timeMode: "custom", finishBy: true, gapStart: 640, gapEnd: 960 };
   const noisy = {
     ...lectures[0],
     id: "noise",
@@ -80,7 +81,7 @@ test("topic resolution, ranking, gap boundaries, term/day and unknown capacities
   expect(gap.every((m) => m.start >= 840 && m.end <= 900)).toBe(true);
   const day = findMeetings(
     all,
-    { ...state, gapStart: 650, gapEnd: 720, building: { codes: ["BA"] } },
+    { ...state, timeMode: "day", building: { codes: ["BA"] } },
     buildings,
     index,
   );
@@ -182,10 +183,13 @@ test("gap draft cancels, keyboard handles apply, and building view includes late
 }) => {
   await open(page);
   await page.locator("#open-filters").click();
+  await expandFilters(page);
   await page.locator("#term").selectOption("S");
   await page.keyboard.press("Escape");
   expect(await page.evaluate(() => window.sonderPreview.state.term)).toBe("F");
   await page.locator("#open-filters").click();
+  await expandFilters(page);
+  await page.locator("#time-mode").selectOption("custom");
   await page.locator("#gap-end").focus();
   await page.keyboard.press("End");
   await page.locator("#gap-start").focus();
@@ -200,10 +204,13 @@ test("gap draft cancels, keyboard handles apply, and building view includes late
   expect(state.gapStart).toBe(840);
   expect(state.gapEnd).toBe(960);
   await expect(page.locator(".class-ticket")).toHaveCount(6);
-  await page.locator("#clear-all").click();
+  await page.locator("#open-filters").click();
+  await expandFilters(page);
+  await page.locator("#reset-filters").click();
+  await page.locator("#apply-filters").click();
   await page.locator('[data-open="CSC108H1-LEC0101-F-2-660"]').click();
   await page.locator("#building-day").click();
-  await expect(page.locator("#active-summary")).toContainText("Full day");
+  await expect(page.locator("#time-day")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator(".class-ticket")).toHaveCount(3);
   await expect(page.locator("#lecture-list")).toContainText(
     "Introduction to Machine Learning",
@@ -218,16 +225,61 @@ test("empty results offer topics, text is escaped, and capacity can be unknown",
   await expect(page.locator(".class-ticket")).toHaveCount(0);
   await expect(page.locator(".browse-topics")).toBeVisible();
   await expect(page.locator(".empty-state img")).toHaveCount(0);
-  await page.locator('[data-browse="music"]').click();
+  await page.locator('[data-more-topics="clear-search"]').click();
+  await page.locator('[data-interest="music"]').check();
+  await page.locator('#apply-filters').click();
   await page.locator(".lecture-open").click();
   await expect(page.locator("#lecture-detail")).toContainText(
     "Capacity unknown",
   );
   await page.locator("#close-detail").click();
   await page.locator("#open-filters").click();
+  await expandFilters(page);
   await page.locator("#big-rooms").check();
   await page.locator("#apply-filters").click();
   await expect(page.locator(".class-ticket")).toHaveCount(0);
+});
+test("starting location is a filter draft until applied, and reset restores campus centre", async ({ page }) => {
+  await open(page);
+  const initialPin = await page.evaluate(() => ({ ...window.sonderPreview.state.pin }));
+  await page.locator("#open-filters").click();
+  await expandFilters(page);
+  await page.locator("#location-building").selectOption("VC");
+  await page.keyboard.press("Escape");
+  expect(await page.evaluate(() => window.sonderPreview.state.pin)).toEqual(initialPin);
+  await page.locator("#open-filters").click();
+  await expandFilters(page);
+  await expect(page.locator("#location-building")).toHaveValue("");
+  await page.locator("#location-building").selectOption("VC");
+  await page.locator("#apply-filters").click();
+  const pin = await page.evaluate(() => window.sonderPreview.state.pin);
+  expect(pin.lat).toBeCloseTo(buildings.VC.lat, 6);
+  expect(pin.lng).toBeCloseTo(buildings.VC.lng, 6);
+  await page.locator("#open-filters").click();
+  await expandFilters(page);
+  await expect(page.locator("#location-building")).toHaveValue("VC");
+  await page.locator("#reset-filters").click();
+  await page.locator("#apply-filters").click();
+  expect(await page.evaluate(() => window.sonderPreview.state.pin)).toEqual(CAMPUS_CENTRE);
+});
+test("a location response from dismissed filters cannot change a new draft", async ({ page }) => {
+  await page.addInitScript(() => Object.defineProperty(navigator, "geolocation", {
+    value: { getCurrentPosition(ok) { window.finishLocation = ok; } },
+  }));
+  await open(page);
+  await page.locator("#open-filters").click();
+  await expandFilters(page);
+  await page.locator("#use-location").click();
+  await page.keyboard.press("Escape");
+  await page.locator("#open-filters").click();
+  await expandFilters(page);
+  await page.locator("#location-building").selectOption("BA");
+  await page.evaluate((point) => window.finishLocation({ coords: { latitude: point.lat, longitude: point.lng } }), buildings.VC);
+  await expect(page.locator("#location-building")).toHaveValue("BA");
+  await page.locator("#apply-filters").click();
+  const pin = await page.evaluate(() => window.sonderPreview.state.pin);
+  expect(pin.lat).toBeCloseTo(buildings.BA.lat, 6);
+  expect(pin.lng).toBeCloseTo(buildings.BA.lng, 6);
 });
 test("location denial preserves pin; keyboard and pointer moves update walks and hash", async ({
   page,
@@ -242,13 +294,14 @@ test("location denial preserves pin; keyboard and pointer moves update walks and
     }),
   );
   await open(page);
-  await page.locator("#open-location").click();
+  await page.locator("#open-filters").click();
+  await expandFilters(page);
   await page.locator("#use-location").click();
   await expect(page.locator("#location-status")).toContainText(
     "stayed in place",
   );
   await page.locator("#location-building").selectOption("VC");
-  await expect(page.locator("#location-status")).toContainText("Victoria");
+  await expect(page.locator("#location-building")).toHaveValue("VC");
   await page.locator("#move-pin").click();
   await page.waitForFunction(
     () =>
@@ -345,6 +398,7 @@ test("phone layout and sheets fit 320–760 px without horizontal scrolling", as
       ),
     ).toBe(true);
     await page.locator("#open-filters").click();
+  await expandFilters(page);
     const r = await page.locator("#filters-dialog").boundingBox();
     expect(r.x).toBeGreaterThanOrEqual(0);
     expect(r.width).toBeLessThanOrEqual(width);
@@ -383,24 +437,24 @@ test("Sonderate stays reachable, rerolls, and share fallback preserves the class
   ).not.toBe(first);
   await page.locator("#share-class").click();
   await expect(page.locator("#share-dialog")).toBeVisible();
-  await expect(page.locator("#share-url")).toHaveValue(page.url());
+  await page.locator("#copy-invite").click();
+  await expect(page.locator("#share-url")).toHaveValue(/invite=1/);
 });
 
-test("toolbar and class share controls give visible clipboard feedback", async ({
-  page,
-}) => {
-  await page.addInitScript(() =>
-    Object.defineProperty(navigator, "clipboard", {
-      value: { writeText: async (value) => (window.__sharedUrl = value) },
-    }),
-  );
+test("sharing is a prominent class-only action with invitation copy feedback", async ({ page }) => {
+  await page.addInitScript(() => Object.defineProperty(navigator, "clipboard", {
+    value: { writeText: async value => { window.__sharedUrl = value; } },
+  }));
   await open(page);
-  await page.locator("#share-link").click();
-  await expect(page.locator("#share-link")).toHaveText(/Link copied/);
-  expect(await page.evaluate(() => window.__sharedUrl)).toBe(page.url());
+  await expect(page.locator("#share-link, #share-class")).toHaveCount(0);
   await page.locator(".lecture-open").first().click();
+  await expect(page.locator("#share-class")).toBeVisible();
   await page.locator("#share-class").click();
-  await expect(page.locator("#share-class")).toHaveText("Copied ✓");
   await expect(page.locator("#share-dialog")).toBeVisible();
-  expect(await page.evaluate(() => window.__sharedUrl)).toBe(page.url());
+  await page.locator("#copy-invite").click();
+  await expect(page.locator("#share-feedback")).toContainText("Invitation copied");
+  const url = await page.locator("#share-url").inputValue();
+  expect(await page.evaluate(() => window.__sharedUrl)).toBe(url);
+  expect(url).toContain("invite=1");
+  expect(url).not.toContain("pin=");
 });

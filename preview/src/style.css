@@ -239,24 +239,6 @@
   box-shadow: 0 6px 26px #1d4b7a0a;
   padding: 7px;
 }
-.campus-map .view-switch {
-  display: flex;
-  gap: 3px;
-}
-.campus-map .view-switch button {
-  font-family: var(--mono);
-  font-size: 8px;
-  letter-spacing: 0.5px;
-  background: none;
-  border-radius: 2px;
-  padding: 12px 15px;
-  color: #6a819c;
-  white-space: nowrap;
-}
-.campus-map .view-switch button.active {
-  background: #002a5c;
-  color: white;
-}
 .campus-map .square-control {
   display: grid;
   place-items: center;
@@ -626,10 +608,6 @@
     width: max-content;
     max-width: calc(100% - 30px);
   }
-  .campus-map .view-switch button {
-    font-size: 7px;
-    padding: 12px 10px;
-  }
   .campus-map .square-control {
     width: 31px;
     height: 33px;
@@ -779,9 +757,6 @@
   .campus-map .square-control {
     height: 38px;
   }
-  .campus-map .view-switch button {
-    min-height: 38px;
-  }
   .campus-map .view-controls {
     padding: 5px;
   }
@@ -914,4 +889,24 @@
   border-radius: 50%;
   background: #0758cc;
   box-shadow: 0 0 0 3px white;
+}
+
+
+
+.campus-map button.compass {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 5px;
+  background: #ffffffed;
+  border: 1px solid #cbd9e9;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.campus-map button.compass:hover {
+  background: #eaf2fc;
+}
+.campus-map button.compass svg {
+  width: 25px;
+  margin-top: 0;
 }
