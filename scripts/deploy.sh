@@ -52,6 +52,26 @@ if grep -q 'src="/app/' site/app/explore.html; then
   exit 1
 fi
 
+# Never silently drop analytics that the live site already has. A build from a
+# shell without SONDER_GC_SITE produces untracked pages that look identical to
+# tracked ones, and republishing them stops collection without any error --
+# exactly how a day of launch traffic went uncounted. Compares against what is
+# actually being served rather than the local branch, because site/ is build
+# output and the published pages are the only record of what visitors load.
+for page in index.html app/explore.html; do
+  built="site/$page"
+  [ -f "$built" ] || continue
+  # gh-pages keeps the build under site/, matching the layout published below.
+  live=$(git show "$BRANCH:site/$page" 2>/dev/null || true)
+  case "$live" in *goatcounter*) ;; *) continue ;; esac
+  if ! grep -q goatcounter "$built"; then
+    echo "error: $page is tracked on $BRANCH but this build is not." >&2
+    echo "       Set SONDER_GC_SITE (see .env.sonder.example), rebuild, and retry." >&2
+    echo "       To publish untracked on purpose: SONDER_ALLOW_UNTRACKED=1 $0 ${*:-}" >&2
+    [ -n "${SONDER_ALLOW_UNTRACKED:-}" ] || exit 1
+  fi
+done
+
 # Stage the build outside the worktree BEFORE switching branches: checking out
 # gh-pages overwrites site/ with that branch's copy, so building in place and
 # then switching loses the thing being published.

@@ -104,6 +104,19 @@ Off by default. Set `SONDER_GC_SITE` to a [GoatCounter](https://www.goatcounter.
 subdomain and `site.sh` injects the tag into both pages at assembly time;
 leave it unset and the site ships with no tracking at all.
 
+Keep it in `.env.sonder` rather than exporting it by hand:
+
+```
+cp .env.sonder.example .env.sonder   # then fill in the subdomain
+```
+
+`site.sh` sources that file, so a build from any shell stays tracked. An
+exported `SONDER_GC_SITE` still takes precedence for one-off builds.
+
+Because an untracked build looks exactly like a tracked one, `deploy.sh`
+refuses to publish pages without the tag when the live site already has it.
+Override with `SONDER_ALLOW_UNTRACKED=1` to do it deliberately.
+
 ## Notes
 
 - `BACKEND_CONTRACT.md` and `SCHEMA.md` describe the shape of

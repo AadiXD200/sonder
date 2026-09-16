@@ -64,6 +64,16 @@ echo "sonderate.me" > site/CNAME
 # snippet. Set SONDER_GC_SITE to your GoatCounter subdomain to enable it;
 # unset, the site ships with no tracking at all, which is the right default
 # for local builds and previews.
+#
+# .env.sonder carries it between shells. Without it the variable has to be set
+# on every invocation, and a single forgotten export silently republishes the
+# site untracked -- which cannot be backfilled. An exported value still wins,
+# so a one-off build can override the file.
+if [ -f .env.sonder ] && [ -z "${SONDER_GC_SITE:-}" ]; then
+  # shellcheck disable=SC1091
+  . ./.env.sonder
+  export SONDER_GC_SITE
+fi
 if [ -n "${SONDER_GC_SITE:-}" ]; then
   echo "==> analytics ($SONDER_GC_SITE)"
   TAG='<script data-goatcounter="https://'"$SONDER_GC_SITE"'.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>'
