@@ -3,6 +3,7 @@
 #
 #   ./scripts/deploy.sh          build, publish, wait for the deploy
 #   ./scripts/deploy.sh --skip-build   publish the existing site/ as-is
+#   ./scripts/deploy.sh --skip-data    build UI with the existing timetable
 #
 # Why two branches: site/ is ~14 MB of build output, and it cannot be built in
 # CI because scripts/build.py regenerates the data from ~100 MB of registrar
@@ -14,6 +15,12 @@ cd "$(dirname "$0")/.."
 
 BRANCH=gh-pages
 START_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+case "${1:-}" in
+  ""|--skip-build|--skip-data) ;;
+  *) echo "usage: $0 [--skip-build|--skip-data]" >&2; exit 1 ;;
+esac
+[ "$#" -le 1 ] || { echo "usage: $0 [--skip-build|--skip-data]" >&2; exit 1; }
 
 if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
   echo "error: uncommitted tracked changes. Commit or stash them first." >&2
@@ -28,7 +35,11 @@ if [ "${1:-}" != "--skip-build" ]; then
   if [ -z "${SONDER_GC_SITE:-}" ]; then
     echo "warning: SONDER_GC_SITE unset, publishing with no analytics" >&2
   fi
-  ./scripts/site.sh
+  if [ "${1:-}" = "--skip-data" ]; then
+    ./scripts/site.sh --skip-data
+  else
+    ./scripts/site.sh
+  fi
 fi
 
 [ -f site/app/explore.html ] || { echo "error: site/ has no built app" >&2; exit 1; }

@@ -6,11 +6,37 @@
 #
 # One directory, no server, no build step at the host. Drop it on GitHub Pages
 # or Cloudflare Pages as-is.
+# Use --skip-data for UI releases that keep the existing published timetable.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+case "${1:-}" in
+  ""|--skip-data) ;;
+  *) echo "usage: $0 [--skip-data]" >&2; exit 1 ;;
+esac
+[ "$#" -le 1 ] || { echo "usage: $0 [--skip-data]" >&2; exit 1; }
+
 echo "==> data"
-.venv/bin/python scripts/build.py
+if [ "${1:-}" = "--skip-data" ]; then
+  .venv/bin/python - <<'VALIDATE'
+import json
+from pathlib import Path
+root = Path('preview/public/data')
+for filename in ('lectures.json', 'buildings.json', 'topics.json'):
+    path = root / filename
+    if not path.is_file():
+        raise SystemExit(f'error: missing published data: {path}; rebuild the timetable first')
+    data = json.loads(path.read_text())
+    if not isinstance(data, dict) or not data or (filename == 'lectures.json' and not data.get('meetings')):
+        raise SystemExit(f'error: empty or invalid published data: {path}')
+print('Keeping the existing published timetable.')
+VALIDATE
+else
+  for input in .cache/bldg.raw .cache/stage2_detail.json; do
+    [ -f "$input" ] || { echo "error: missing $input; use --skip-data to build with the existing published timetable" >&2; exit 1; }
+  done
+  .venv/bin/python scripts/build.py
+fi
 .venv/bin/python scripts/landing_stats.py
 
 echo "==> app"

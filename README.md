@@ -92,6 +92,12 @@ cd preview && npm install && cd ..
 
 For the app alone, `cd preview && npm run dev`.
 
+For a UI release using the existing files in `preview/public/data/`, run
+`./scripts/site.sh --skip-data` to build and review `site/` without scrape
+intermediates. After committing the source changes,
+`./scripts/deploy.sh --skip-build` publishes that reviewed build. To build and publish together
+while keeping the timetable, use `./scripts/deploy.sh --skip-data`.
+
 ### Analytics
 
 Off by default. Set `SONDER_GC_SITE` to a [GoatCounter](https://www.goatcounter.com)
